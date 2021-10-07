@@ -1,0 +1,171 @@
+<div class="right_col">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel height-auto mb-0 pb-0">
+      <div class="x_title">
+        <h2>New Registration <small>This section give access to operate the software. <span
+              class="text-danger font-weight-bold">Be carefull before
+              assigning user.</span></small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <div class="modal fade" id="facultyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="facultyModalMsg">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Wizard -->
+        <div class="col-md-12 col-xs-12 x_panel height-auto">
+          <div id="wizard" class="mt-5 form_wizard wizard_horizontal">
+            <form method="post" id="user-form" [formGroup]="NewUserDetail" (keydown.enter)="$event.preventDefault()">
+              <div id="step-1" class="form-horizontal form-label-left" name="form-steps">
+                <div class="col-md-12 col-sm-12 row">
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12" for="first-name">
+                        User Name <span class="required">*</span>
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12">
+                        <input type="text" id="FullName" name="FullName" placeholder="User full name" required
+                          formControlName="FullName" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        Mobile no.#
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12">
+                        <input type="text" id="MobileNo" name="MobileNo" placeholder="Mobile no." required
+                          formControlName="MobileNo" class="form-control" (keypress)="MobileNumber($event)">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        Alternet no.#
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12">
+                        <input type="text" id="AlternetNo" name="AlternetNo" placeholder="Alternet No.#"
+                          formControlName="AlternetNo" class="form-control" (keypress)="MobileNumber($event)">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        Date Of Birth
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12">
+                        <div class="form-group">
+                          <div class='input-group date' id='myDatepicker'>
+                            <mat-form-field class="p-0 col-md-12 plain-date">
+                              <input matInput [matDatepicker]="dp3" formControlName="Dob" placeholder="Date of birth"
+                                disabled name="Dob" id="Dob">
+                              <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+                              <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+                            </mat-form-field>
+                            <span class="input-group-addon">
+                              <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12" for="first-name">
+                        Email Id
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12">
+                        <input type="text" id="EmailId" name="EmailId" placeholder="Email address"
+                          formControlName="EmailId" class="form-control">
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        User Roles
+                      </label>
+                      <div class="col-md-7 col-sm-7 d-inline-block">
+                        <select class="form-control" id="RoleUid" required name="RoleUid" formControlName="RoleUid">
+                          <option value="">User Roles</option>
+                          <option *ngFor="let role of Roles" value="{{role.RoleDescUid}}">{{role.RoleName}}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        State
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12 d-inline-block">
+                        <select class="form-control" id="State" name="State" formControlName="State">
+                          <option value="">State</option>
+                          <option value="item">item</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">
+                        City
+                      </label>
+                      <div class="col-md-7 col-sm-7 col-xs-12 d-inline-block">
+                        <select class="form-control" id="City" name="City" formControlName="City">
+                          <option value="">City</option>
+                          <option value="item">item</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label class="col-form-label text-right col-md-4 col-sm-4 col-xs-12">Gender</label>
+                      <div class="gender-dv col-md-7 col-sm-7 col-xs-12 d-flex">
+                        <div class="form-check">
+                          <input type="radio" class="form-check-input" name="Male" id="Male"
+                            (change)="ManageCheckbox(true)" checked="true" />
+                          <label class="form-check-label" for="exampleCheck1">Male</label>
+                        </div>
+                        <div class="ml-4 form-check">
+                          <input type="radio" class="form-check-input" name="Female" (change)="ManageCheckbox(false)"
+                            id="Female" />
+                          <label class="form-check-label" for="exampleCheck1">Female</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-12 form-group row position-relative">
+                    <label class="col-form-label text-right col-md-2 col-sm-2 col-xs-12">
+                      Address
+                    </label>
+                    <div class="col-md-10 col-sm-10 col-xs-12 d-inline-block">
+                      <textarea class="form-control" id="Address" formControlName="Address" name="Address"
+                        rows="3"></textarea>
+                    </div>
+                  </div>
+
+                  <div class="actionBar text-right">
+                    <a href="javascript:void(0)" id="submitbtn" disabled="disabled"
+                      class="buttonFinish btn btn-default">
+                      <i class="fa fa-refresh" aria-hidden="true"></i> Reset</a>
+                    <a href="javascript:void(0)" id="nextbtn" class="buttonNext btn btn-success" (click)="SubmitForm()">
+                      <i class="fa fa-address-book" aria-hidden="true"></i>&nbsp;Submit</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- End SmartWizard Content -->
+      </div>
+    </div>
+  </div>
+</div>

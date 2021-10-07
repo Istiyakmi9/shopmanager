@@ -1,0 +1,36 @@
+/* ---------------------------------------------------
+      CONTENT STYLE
+  ----------------------------------------------------- */
+#content {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  margin-left: var(--content-body);
+  transition: all 0.3s;
+}
+
+#content.active {
+  margin-left: 80px;
+  transition: all 0.3s;
+}
+
+.navbar {
+  background: #fff;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-btn {
+  box-shadow: none;
+  outline: none !important;
+  border: none;
+}
+
+.menu {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.navbar {
+  height: 50px !important;
+}

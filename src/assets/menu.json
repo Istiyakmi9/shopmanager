@@ -1,0 +1,157 @@
+{
+  "menu": [{
+    "catagory": "General",
+    "childs": [{
+      "catagory": "Home",
+      "childs": [{
+        "catagory": "Dashboard",
+        "childs": [],
+        "link": "dashboard",
+        "icon": "fas fa-tachometer-alt",
+        "badge": "",
+        "badge-type": ""
+      }],
+      "link": "NA",
+      "icon": "fa fa-home",
+      "badge": "New",
+      "badge-type": "badge badge-pill badge-warning"
+    }, {
+      "catagory": "Goods(s)",
+      "childs": [{
+        "catagory": "Sales",
+        "childs": [],
+        "link": "sales",
+        "icon": "fas fa-shopping-basket",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Purchase",
+        "childs": [],
+        "link": "purchases",
+        "icon": "fas fa-cart-arrow-down",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Billing",
+        "childs": [],
+        "link": "billing",
+        "icon": "fas fa-money-bill-wave",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Credit",
+        "childs": [],
+        "link": "credit",
+        "icon": "fa fa-history",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Purchase Credit",
+        "childs": [],
+        "link": "credit",
+        "icon": "fa fa-history",
+        "badge": "",
+        "badge-type": ""
+      }],
+      "link": "NA",
+      "icon": "fas fa-dolly-flatbed",
+      "badge": "",
+      "badge-type": ""
+    }, {
+      "catagory": "Report(s)",
+      "childs": [{
+        "catagory": "Customer",
+        "childs": [],
+        "link": "customer-report",
+        "icon": "fas fa-chalkboard-teacher",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Vendor",
+        "childs": [],
+        "link": "vendor-report",
+        "icon": "fa fa-user-plus",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Item(s)",
+        "childs": [],
+        "link": "item-report",
+        "icon": "fa fa-table",
+        "badge": "",
+        "badge-type": ""
+      }],
+      "link": "NA",
+      "icon": "fas fa-clipboard-list",
+      "badge": "",
+      "badge-type": ""
+    }],
+    "link": "NA",
+    "icon": "far fa-clipboard-list",
+    "badge": "",
+    "badge-type": ""
+  }, {
+    "catagory": "Master",
+    "childs": [{
+      "catagory": "Service",
+      "childs": [{
+        "catagory": "Products",
+        "childs": [],
+        "link": "product",
+        "icon": "fas fa-archive",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Vendor/Customer",
+        "childs": [],
+        "link": "customer",
+        "icon": "fas fa-user-cog",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Setting",
+        "childs": [],
+        "link": "setting",
+        "icon": "fa fa-wrench",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "UploadExcel",
+        "childs": [],
+        "link": "uploadexcel",
+        "icon": "fa fa-wrench",
+        "badge": "",
+        "badge-type": ""
+      }],
+      "link": "NA",
+      "icon": "fas fa-file-signature",
+      "badge": "",
+      "badge-type": ""
+    }, {
+      "catagory": "User(s)",
+      "childs": [{
+        "catagory": "User",
+        "childs": [],
+        "link": "users",
+        "icon": "fas fa-users-cog",
+        "badge": "",
+        "badge-type": ""
+      }, {
+        "catagory": "Roles",
+        "childs": [],
+        "link": "roles",
+        "icon": "fa fa-cogs",
+        "badge": "",
+        "badge-type": ""
+      }],
+      "link": "NA",
+      "icon": "fas fa-id-card-alt",
+      "badge": "",
+      "badge-type": ""
+    }]
+  }],
+  "link": "NA",
+  "icon": "fa fa-file-text",
+  "badge": "",
+  "badge-type": ""
+}

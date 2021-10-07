@@ -1,0 +1,267 @@
+<div role="main">
+  <div id="billing" class="h-100">
+    <div class="clearfix"></div>
+    <form #form="ngForm" class="mb-4">
+      <div class="col-md-12 col-xs-12 x_panel mb-0 pb-0">
+        <div class="x_title panel-title">
+          <div class="col-md-8 col-sm-12 d-inherit">
+            <h2>
+              Item selling<small>View and add new purchase item(s)</small>
+            </h2>
+          </div>
+        </div>
+        <div *ngIf="IsDataReady">
+          <div class="col-md-12 pr-0 pl-0 d-inherit">
+            <div id="wizard" class="float-left w-100">
+              <div class="x_content pr-0 pl-0">
+                <div id="uploadsec" role="tabpanel" data-example-id="togglable-tabs">
+                  <ul id="vendor_cust_registration" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li role="presentation" class="nav-item" name="classmasterdata" file="ClassMaster">
+                      <a name="customer" (click)="HandleTabs()" class="nav-link active" id="customer-tab" role="tab"
+                        data-toggle="tab" aria-controls="customer" aria-selected="true">Existing Customer</a>
+                    </li>
+                    <li role="presentation" name="facultydata" class="nav-item" file="Faculty">
+                      <a name="newcustomer" (click)="HandleTabs()" class="nav-link" id="vendor-tab" role="tab"
+                        data-toggle="tab" aria-controls="vendor" aria-selected="true">New Customer</a>
+                    </li>
+                  </ul>
+
+                  <div id="myTabContent" class="tab-content">
+                    <!-- New Customer form -->
+                    <div role="tabpanel" class="tab-pane fade show active" id="newcustomer" *ngIf="IsNewCustomer"
+                      aria-labelledby="customer-tab">
+                      <div class="col-md-3 d-inline-block">
+                        <label>Customer Name</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <input type="text" class="form-control" id="FullName" name="FullName"
+                              (click)="EnableField()" placeholder="Customer Name" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 d-inline-block">
+                        <label>Mobile No. #</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <input type="text" class="form-control" id="MobileNo" name="MobileNo"
+                              (click)="EnableField()" placeholder="Mobile No. #" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 d-inline-block">
+                        <label>GST IN No.#</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <input type="text" class="form-control" id="GSTNo" name="GSTNo" placeholder="GST IN no.#" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 d-inline-block">
+                        <label>Aadhar No. #</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <input type="text" class="form-control" id="AadaharNo" name="AadaharNo"
+                              placeholder="Aadhar no. #" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-12 d-inline-block">
+                        <label>Address</label>
+                        <div class="form-group row">
+                          <div class="col-9 d-inline-block">
+                            <textarea id="Address" class="form-control" placeholder="Address (optional)" name="Address"
+                              rows="3"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Existing customer -->
+                    <div role="tabpanel" class="tab-pane fade show active" id="existingcustomer" *ngIf="!IsNewCustomer"
+                      aria-labelledby="customer-tab">
+                      <div class="col-md-3 d-inline-block">
+                        <label>Customer By name</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <app-iautocomplete id="CustomerByName" [Data]="CustomerDetail"></app-iautocomplete>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 d-inline-block">
+                        <label>Customer By Aadhar No. #</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <app-iautocomplete id="CustomerByAadahrNo" [Data]="CustomerAadharDetail">
+                            </app-iautocomplete>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6 d-inline-block">
+                        <label>Customer By Shop Name</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <app-iautocomplete id="CustomerByShopName" [Data]="CustomerShopDetail">
+                            </app-iautocomplete>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-xs-12 pt-2 pt-2 panel-body pl-0 pr-0">
+            <!-- <app-dynamic-table [pageData]="DynamicTableDetail"></app-dynamic-table> -->
+            <div class="table-responsive">
+              <!--Table-->
+              <table id="billtable" class="table table-bordered" style="width:100%">
+                <thead>
+                  <tr>
+                    <th rowspan="2">#</th>
+                    <th rowspan="2">Item (Catagory)</th>
+                    <th rowspan="2" class="w-14">Desc</th>
+                    <th rowspan="2" class="">Qty#</th>
+                    <th rowspan="2" class="w-6">Price/-</th>
+                    <th colspan="3" class="sub-header-cell">GST in (%)</th>
+                    <th rowspan="2">(<i class="fas fa-rupee-sign"></i>)&nbsp;Tax Amt</th>
+                    <th rowspan="2">(<i class="fas fa-rupee-sign"></i>)&nbsp;Final</th>
+                  </tr>
+                  <tr class="sub-header-row">
+                    <th>IGST</th>
+                    <th>SGST</th>
+                    <th>CGST</th>
+                  </tr>
+                </thead>
+                <tbody id="billing-body">
+                  <tr *ngFor="let item of BillingFormGroup; let i = index" name="item-record" [attr.index]="i">
+                    <div class="d-none">
+                      <input type="hidden" name="Catagory" value="" />
+                      <input type="hidden" name="Quantity" value="" />
+                      <input type="hidden" name="Price" value="" />
+                      <input type="hidden" name="Discount" value="" />
+                      <input type="hidden" name="TotalPrice" value="" />
+                    </div>
+                    <td>
+                      <div class="m-0 p-0 text-center">
+                        <label class="m-0 p-0">{{i + 1}}</label>
+                      </div>
+                    </td>
+                    <td [ngStyle]="{ width: i === 0 ? '30%' : 'auto' }">
+                      <div name="parent-select" class="select-autofill-parent">
+                        <app-iautocomplete id="StockDetail" [ClassName]="FieldClass" [Tabindex]="[i * 2 + 1]"
+                          [Data]="StockBindingData" [SingleMode]="AutoFillDropdownMode"
+                          (OnSelect)="HandleAutofillData($event)"></app-iautocomplete>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="description">
+                        <input type="text" [tabindex]="[i * 2 + 2]" class="w-75 tbl-input border-0 br-0"
+                          (keydown)="VerifyDescriptionInput($event)" (keypress)="HandleDescription($event)"
+                          name="Description" (keyup)="ManageDescription($event)" (focus)="PrepareBinding()"
+                          class="tbl-input border-0 br-0 bg-white" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="quantity">
+                        <input type="text" [tabindex]="[i * 2 + 3]" class="w-75 tbl-input border-0 br-0"
+                          (keydown)="VerifyInput($event)" name="QuantityField" (keyup)="CalculateRate()"
+                          (focus)="EnableCurrentRow()" />
+                        <label class="view-lbl">
+                          <small initdata="" name="availablequantity"></small>
+                        </label>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="price">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="igst-col">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="sgst-col">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="cgst-col">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="taxamount">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="grandprice">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="5">
+                      <div>
+                        <label class="d-block">Brand: &nbsp;<span class="lbl-msg" id="brand"></span></label>
+                        <label class="d-block">S.No #: &nbsp;<span class="lbl-msg" id="serialno"></span></label>
+                        <label class="d-block">Desc: &nbsp;<span class="lbl-msg" id="description"></span></label>
+                      </div>
+                    </th>
+                    <th class="bg-white" colspan="5">
+                      <label class="d-block final-lbl mt-4">Grand Total &nbsp;
+                        <div class="float-right pr-2">
+                          <i class="fa fa-rupee"></i>&nbsp;
+                          <span id="grand_total">{{ GrandAmount }}</span>
+                        </div>
+                      </label>
+                      <div class="float-left w-100 mt-2">
+                        <label class="position-relative t-20">Amount Paid:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right">
+                          <mat-form-field class="inputfield">
+                            <input type="text" matInput (keydown)="AllowMoney($event)" placeholder="Amount paid"
+                              id="paidamount" name="paidamount">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                      <div class="float-left w-100">
+                        <label class="position-relative t-20">Amount Due:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right">
+                          <mat-form-field>
+                            <input type="text" matInput disabled placeholder="Amount due" id="dueamount"
+                              name="dueamount">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
+              <!--Table-->
+            </div>
+            <div class="col-md-4 col-sm-12 pr-0 float-right text-right pb-2">
+              <button class="btn btn-outline-primary mr-2" (click)="AddMoreRows()">
+                <i class="fa fa-plus pr-2" aria-hidden="true"></i>Add Row
+              </button>
+              <button class="btn btn-secondary" (click)="SubmitSoldItems()">
+                <i class="fa fa-file-text pr-2" aria-hidden="true"></i>Submit
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="!IsDataReady">
+          <div class="x_panel no-text text-center col-12">
+            <p class="text-muted">NO DATA FOUND. IT SEEEMS LIKE EVERYTHING IS EMPTY, SO PLEASE ADD YOUR DATA.</p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,431 @@
+<div class="right_col">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Customer Registration <small>Register customer detail.</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content pb-0">
+        <div class="modal fade" id="facultyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="facultyModalMsg">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="wizard" class="form_wizard wizard_horizontal">
+          <div class="x_content">
+            <div class="" id="uploadsec" role="tabpanel" data-example-id="togglable-tabs">
+              <ul id="vendor_cust_registration" class="nav nav-tabs bar_tabs" role="tablist">
+                <li role="presentation" class="nav-item" name="classmasterdata" file="ClassMaster"
+                  (click)="HandleNav('Customer')">
+                  <a href="#customer" [ngClass]="{active : IsCustomer}" class="nav-link" id="customer-tab" role="tab"
+                    data-toggle="tab" aria-controls="customer" aria-selected="true">Customer</a>
+                </li>
+                <li role="presentation" name="facultydata" class="nav-item" file="Faculty"
+                  (click)="HandleNav('Vendor')">
+                  <a href="#vendor" [ngClass]="{active : !IsCustomer}" class="nav-link" id="vendor-tab" role="tab"
+                    data-toggle="tab" aria-controls="vendor" aria-selected="true">Vendor</a>
+                </li>
+              </ul>
+
+              <div id="myTabContent" class="tab-content">
+                <!-- Customer form -->
+                <div role="tabpanel" class="tab-pane" [ngClass]="{'active show-linear' : IsCustomer}" id="customer"
+                  *ngIf="IsCustomer" aria-labelledby="customer-tab">
+                  <form method="post" #customerform="ngForm" (ngSubmit)="SubmitCustomerForm()" id="customer-form">
+                    <div class="profile_picture">
+                      <div id="crop-avatar" class="user-pic">
+                        <!-- Current avatar -->
+                        <input class="d-none" type="file" id="imageupload" (change)="GetFile($event)" />
+                        <a class="upload-anc" (click)="OpenFileExplorer()">
+                          <span>Browse picture</span>&nbsp;
+                          <i class="fa fa-paperclip" aria-hidden="true"></i>
+                        </a>
+                        <img class="img-responsive" id="profileImgUrl-demo" [src]="UserDetail.UserImagePath"
+                          alt="Avatar" title="Change the avatar" />
+                      </div>
+                    </div>
+
+                    <!-- Fields -->
+                    <div id="step-1" name="form-steps">
+                      <div class="form-horizontal form-label-left col-md-6 col-12 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Full Name <span class="required">*</span>
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="FullName" ngModel placeholder="Full name.# (required)"
+                              [(ngModel)]="UserDetail.FullName" name="FullName" required class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Mobile No.#<span class="required">*</span>
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" (keypress)="PhonenoValidation($event)" [(ngModel)]="UserDetail.MobileNo"
+                              id="MobileNo" name="MobileNo" required ngModel class="form-control"
+                              placeholder="Mobile no.# (required)">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Alt. Mobile #
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="AlternetNo" [(ngModel)]="UserDetail.AlternetMobileNo"
+                              (keypress)="PhonenoValidation($event)" placeholder="Alternet no.# (optional)"
+                              name="AlternetNo" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Email Id
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="EmailId" [(ngModel)]="UserDetail.EmailId"
+                              placeholder="Email id (optional)" name="EmailId" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                            DOB
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <mat-form-field class="w-100 plain-date">
+                              <input matInput id="Dob" name="Dob" [matDatepicker]="picker" [(ngModel)]="UserDetail.Dob">
+                              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                              <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Address
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <textarea id="Address" class="form-control" [(ngModel)]="UserDetail.FullAddress"
+                              placeholder="Address (optional)" name="Address" rows="3" ngModel></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-horizontal form-label-left col-md-6 col-12 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Ph: No.#
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" (keypress)="PhonenoValidation($event)" id="PhoneNo" ngModel
+                              name="PhoneNo" class="form-control" [(ngModel)]="UserDetail.ShopPhoneNumber"
+                              placeholder="Phone no.# (optional)">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                            Shop Name</label>
+                          <div class="col-9 d-inline-block">
+                            <input id="ShopName" ngModel name="ShopName" class="form-control" type="text"
+                              placeholder="Shop name (optional)" [(ngModel)]="UserDetail.ShopName">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            License No.
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="LicenseNo" name="LicenseNo" ngModel class="form-control"
+                              placeholder="License No. (optional)" [(ngModel)]="UserDetail.LicenseNo">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            GSTIN/Aadhar
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="GSTNo" name="GSTNo" [(ngModel)]="UserDetail.GSTNo"
+                              placeholder="GST No. / Aadhar No. (optional)" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            State
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <select class="form-control" id="State" name="State" ngModel [(ngModel)]="UserDetail.State">
+                              <option selected="" value="">State</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            City
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <select class="form-control" id="City" name="City" ngModel [(ngModel)]="UserDetail.City">
+                              <option selected value="">City</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Pincode
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input class="form-control" id="Pincode" name="Pincode" ngModel
+                              [(ngModel)]="UserDetail.Pincode" placeholder="Pincode (optional)" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="x_title float-left w-100 mt-4">
+                      <h2>Customer Account <small>Add customer bank account detail.</small></h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="col-12 float-left panel">
+                      <div class="col-md-6 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Account No.
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="CustBankAccountNo" ngModel name="CustBankAccountNo"
+                              [(ngModel)]="UserDetail.CustBankAccountNo" class="form-control"
+                              placeholder="Bank account no. (optional)">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            IFSC Code
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="IFSCCode" placeholder="IFSC Code (optional)" ngModel name="IFSCCode"
+                              [(ngModel)]="UserDetail.IFSCCode" class="form-control">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action -->
+                    <div class="align-btn pt-2 float-left">
+                      <input type="hidden" [(ngModel)]="UserDetail.CustomerUid" name="CustomerUid">
+                      <button href="javascript:void(0)" id="submitbtn" (click)="ResetForm()"
+                        class="buttonFinish btn btn-default">
+                        <i class="fa fa-refresh"></i>&nbsp;Reset</button>&nbsp;
+                      <button type="submit" id="nextbtn" class="buttonNext btn btn-success">
+                        <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Submit</button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Vendor form -->
+                <div role="tabpanel" class="tab-pane" [ngClass]="{'active show-linear' : !IsCustomer}" id="vendor"
+                  *ngIf="!IsCustomer" aria-labelledby="vendor-tab">
+                  <form method="post" #vendorform="ngForm" (ngSubmit)="SubmitVendorForm()" id="vendor-form">
+                    <div class="profile_picture">
+                      <div id="crop-avatar" class="user-pic">
+                        <!-- Current avatar -->
+                        <input class="d-none" type="file" id="imageupload" (change)="GetFile($event)" />
+                        <a class="upload-anc" (click)="OpenFileExplorer()">
+                          <span>Browse picture</span>&nbsp;
+                          <i class="fa fa-paperclip" aria-hidden="true"></i>
+                        </a>
+                        <img class="img-responsive" [src]="Vendor.UserImagePath" alt="Avatar"
+                          title="Change the avatar" />
+                      </div>
+                    </div>
+
+                    <div id="step-2" name="form-steps">
+                      <div class="form-horizontal form-label-left col-md-6 col-12 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Full Name <span class="required">*</span>
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="FullName" ngModel placeholder="Full name.# (required)"
+                              [(ngModel)]="Vendor.FullName" name="FullName" required class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Mobile No.#<span class="required">*</span>
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" (keypress)="PhonenoValidation($event)" [(ngModel)]="Vendor.MobileNo"
+                              id="MobileNo" name="MobileNo" required ngModel class="form-control"
+                              placeholder="Mobile no.# (required)">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Alt. Mobile #
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="AlternetNo" [(ngModel)]="Vendor.AlternetMobileNo"
+                              (keypress)="PhonenoValidation($event)" placeholder="Alternet no.# (optional)"
+                              name="AlternetNo" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Email Id
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="EmailId" [(ngModel)]="Vendor.EmailId"
+                              placeholder="Email id (optional)" name="EmailId" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                            DOB
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <mat-form-field class="w-100 plain-date">
+                              <input matInput id="Dob" name="Dob" [matDatepicker]="picker" [(ngModel)]="Vendor.Dob">
+                              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                              <mat-datepicker #picker></mat-datepicker>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Address
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <textarea id="Address" class="form-control" [(ngModel)]="Vendor.FullAddress"
+                              placeholder="Address (optional)" name="Address" rows="3" ngModel></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-horizontal form-label-left col-md-6 col-12 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Ph: No.#
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" (keypress)="PhonenoValidation($event)" id="PhoneNo" ngModel
+                              name="PhoneNo" class="form-control" [(ngModel)]="Vendor.ShopPhoneNumber"
+                              placeholder="Phone no.# (optional)">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                            Shop Name</label>
+                          <div class="col-9 d-inline-block">
+                            <input id="ShopName" ngModel name="ShopName" class="form-control" type="text"
+                              placeholder="Shop name (optional)" [(ngModel)]="Vendor.ShopName">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            License No.
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="LicenseNo" name="LicenseNo" ngModel class="form-control"
+                              placeholder="License No. (optional)" [(ngModel)]="Vendor.LicenseNo">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            GSTIN/Aadhar
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="GSTNo" name="GSTNo" [(ngModel)]="Vendor.GSTNo"
+                              placeholder="GST No. / Aadhar No. (optional)" ngModel class="form-control">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            State
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <select class="form-control" id="State" name="State" ngModel [(ngModel)]="Vendor.State">
+                              <option selected="" value="">State</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            City
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <select class="form-control" id="City" name="City" ngModel [(ngModel)]="Vendor.City">
+                              <option selected value="">City</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                            Pincode
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input class="form-control" id="Pincode" name="Pincode" ngModel [(ngModel)]="Vendor.Pincode"
+                              placeholder="Pincode (optional)" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="x_title float-left w-100 mt-4">
+                      <h2>Customer Account <small>Add customer bank account detail.</small></h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <div class="col-12 float-left panel">
+                      <div class="col-md-6 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            Account No.
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="CustBankAccountNo" ngModel name="CustBankAccountNo"
+                              [(ngModel)]="Vendor.CustBankAccountNo" class="form-control"
+                              placeholder="Bank account no. (optional)">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6 float-left">
+                        <div class="form-group">
+                          <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                            IFSC Code
+                          </label>
+                          <div class="col-9 d-inline-block">
+                            <input type="text" id="IFSCCode" placeholder="IFSC Code (optional)" ngModel name="IFSCCode"
+                              [(ngModel)]="Vendor.IFSCCode" class="form-control">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="align-btn pt-2 float-left">
+                      <input type="hidden" [(ngModel)]="Vendor.CustomerUid" name="CustomerUid">
+                      <button href="javascript:void(0)" id="submitbtn" (click)="ResetForm()"
+                        class="buttonFinish btn btn-default">
+                        <i class="fa fa-refresh"></i>&nbsp;Reset</button>&nbsp;
+                      <button href="javascript:void(0)" type="submit" id="nextbtn" class="buttonNext btn btn-success">
+                        <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Submit</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End SmartWizard Content -->
+      </div>
+    </div>
+  </div>
+</div>

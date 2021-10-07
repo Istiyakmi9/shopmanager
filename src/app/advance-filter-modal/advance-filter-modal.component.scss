@@ -1,0 +1,36 @@
+.cdk-overlay-pane {
+  position: absolute !important;
+  top: 20px !important;
+}
+
+a.closed-anc {
+  position: absolute;
+  margin-left: -46px;
+  margin-top: -55px;
+  color: #fff;
+  font-size: 20px;
+}
+
+.closed-anc:hover {
+  font-size: 24px;
+  color: #fff !important;
+  cursor: pointer;
+}
+
+.no-page {
+  margin: auto 18%;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  font-size: 20px;
+  color: #968686;
+  text-align: center;
+}
+
+.card-title {
+  margin-bottom: 1rem !important;
+  text-align: center !important;
+}
+
+.card-title b {
+  color: #787b74 !important;
+}

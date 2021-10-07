@@ -1,0 +1,120 @@
+<div class="right_col">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Setting <small>Set your common info. [ ADMIN ACCESS ONLY ]</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <div class="modal fade" id="facultyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="facultyModalMsg">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Wizard -->
+        <p>Change or add your business common information.</p>
+        <input type="hidden" id="steps-reminder" value="step-1" />
+        <div id="wizard" class="form_wizard wizard_horizontal">
+          <form method="post" (keydown.enter)="$event.preventDefault()" #form="ngForm" id="settingform">
+            <div id="step-1" name="form-steps">
+              <div class="form-horizontal form-label-left">
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                    Select Catagory
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <app-iautocomplete id="Catagory" name="Catagory" [Data]="CatagoryDetail"
+                      (OnSelect)="HandleSelectedCatagory($event)"></app-iautocomplete>
+                  </div>
+                </div>
+                <div class="form-group" *ngIf="enableNewnameField">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                    <mat-checkbox (change)="EnableNewName()" value="eanblesearch" class="position-relative chk-search">
+                      Modyfy name
+                    </mat-checkbox>
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input id="newname" name="newname" ngModel required placeholder="Enter new name for given Catagory"
+                      class="form-control" [disabled]="NewName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                    Catagory Description
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <textarea rows="4" id="desc" name="desc" ngModel required [(ngModel)]="SettingDetail.desc"
+                      placeholder="Catagory Description" class="form-control" [disabled]="FieldDisabled">
+                    </textarea>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                    IGST (calculated in %)
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input id="igst" name="igst" [(ngModel)]="SettingDetail.igst.value" ngModel required
+                      [attr.Uid]="SettingDetail.igst.uid" FloatType="true" placeholder="SGST value in (%)"
+                      class="form-control" [disabled]="FieldDisabled">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                    SGST (calculated in %)</label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input id="sgst" [(ngModel)]="SettingDetail.sgst.value" class="form-control" required ngModel
+                      [attr.Uid]="SettingDetail.sgst.uid" name="sgst" FloatType="true" placeholder="SGST value in (%)"
+                      [disabled]="FieldDisabled">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                    CGST (calculated in %)
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input type="text" id="cgst" name="cgst" required [(ngModel)]="SettingDetail.cgst.value" ngModel
+                      [attr.Uid]="SettingDetail.cgst.uid" FloatType="true" placeholder="CGST value in (%)"
+                      class="form-control" [disabled]="FieldDisabled">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <blockquote class="mt-4 blockquote text-right">
+              <p class="mb-0 footer-p">Verify carefully. This data will be used while billing.<br /> (Authorized access
+                only)</p>
+              <footer class="mt-4 footer-tag blockquote-footer">Someone famous in <cite title="Source Title">Source
+                  Title</cite>
+              </footer>
+            </blockquote>
+            <div class="actionBar mt-2 text-right">
+              <a href="javascript:void(0)" id="submitbtn" disabled="disabled" class="buttonFinish btn mr-2 btn-default"
+                (click)="ClaerForm()">
+                <i class="fa fa-refresh"></i>&nbsp; Clear
+              </a>
+              <a href="javascript:void(0)" id="prevbtn" disabled="disabled" class="buttonPrevious btn btn-primary"
+                (click)="AddNewRule()">
+                <i class="fa fa-upload"></i>&nbsp; Submit
+              </a>
+            </div>
+          </form>
+        </div>
+        <!-- End SmartWizard Content -->
+      </div>
+    </div>
+  </div>
+</div>

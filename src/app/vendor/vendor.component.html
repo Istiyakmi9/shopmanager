@@ -1,0 +1,145 @@
+<div class="right_col">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>New Registration <small>Faculty, Members and Staff's</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <div class="modal fade" id="facultyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="facultyModalMsg">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Wizard -->
+        <p>This is a basic form wizard example that inherits the colors from the selected scheme.</p>
+        <input type="hidden" id="steps-reminder" value="step-1" />
+        <div id="wizard" class="form_wizard wizard_horizontal">
+          <form method="post" id="registrationForm">
+            <div id="step-1" name="form-steps">
+              <div class="form-horizontal form-label-left">
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                    First Name <span class="required">*</span>
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input type="text" id="FirstName" name="FirstName" required class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">Middle Name /
+                    Initial</label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input id="MiddleName" ng-model="middleName" class="form-control" type="text" name="MiddleName">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="last-name">
+                    Last Name
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <input type="text" id="LastName" name="LastName" required ng-model="UserData.LastName"
+                      class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">Gender</label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <div id="gender" class="btn-group">
+                      <p class="para-gender">
+                        Male:
+                        <input type="radio" class="rdo icheckbox_flat-green" style="margin: 0px;" name="gender"
+                          id="genderM" value="male" checked="checked" />
+
+                        Female:
+                        <input type="radio" class="rdo icheckbox_flat-green" style="margin: 0px;" name="gender"
+                          id="genderF" value="female" />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                    Date Of Birth <span class="required">*</span>
+                  </label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <div class="form-group">
+                      <div class='input-group date' id='myDatepicker'>
+                        <input id="Dob" name="Dob" class="date-picker form-control" required type="text">
+                        <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-10 col-sm-10 col-xs-12">
+                    <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" style="margin-left: 36px;">
+                      Class
+                    </label>
+                    <div class="col-md-4 col-sm-4 col-xs-12 d-inline-block">
+                      <select class="form-control" id="Class" name="Class">
+                        <option value="">Choose Class</option>
+                        <option value="item">item</option>
+                      </select>
+                    </div>
+                    <label class="col-form-label text-right col-md-1 col-sm-1 col-xs-12"
+                      style="margin-left: 26px;">Section</label>
+                    <div class="col-md-2 col-sm-2 col-xs-12 d-inline-block">
+                      <select class="form-control" id="section" disabled name="section">
+                        <option value="">Section</option>
+                        <option></option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" style="margin: 0px;">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">Is Admin</label>
+                  <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
+                    <div id="isadmin" class="btn-group">
+                      <p class="para-gender" style="display: inline-block;">
+                        Yes:
+                        <input type="radio" class="rdo icheckbox_flat-green" style="margin: 0px;" name="isadminY"
+                          id="isadminY" value="yes" />
+
+                        No:
+                        <input type="radio" class="rdo icheckbox_flat-green" style="margin: 0px;" name="isadminN"
+                          id="isadminN" value="no" checked="checked" />
+                      </p>
+                      <span id="spnadmin">This option grant user limited access only.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+        </div>
+        <!-- End SmartWizard Content -->
+
+        <div class="actionBar">
+          <a href="javascript:void(0)" id="submitbtn" disabled="disabled"
+            class="buttonFinish btn btn-default">Submit</a>
+          <a href="javascript:void(0)" id="nextbtn" class="buttonNext btn btn-success">Next</a>
+          <a href="javascript:void(0)" id="prevbtn" disabled="disabled"
+            class="buttonPrevious btn btn-primary">Previous</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

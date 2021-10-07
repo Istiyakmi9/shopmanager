@@ -1,0 +1,132 @@
+<div class="right_col" role="main">
+  <div id="catagory-dv">
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-xs-12 x_panel">
+      <div class="x_title" style="margin-bottom: 10px;">
+        <h2>Add New Item<small>Use this page to add single item.</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="col-md-12 col-xs-12 p-2">
+        <div class="card x_panel">
+          <div class="x_title">
+            <h2>Add Item <small>add your store items here.</small></h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <br />
+            <form #form="ngForm" id="catagory-form" (keydown.enter)="$event.preventDefault()"
+              class="form-horizontal form-label-left input_mask" (ngSubmit)="AddCatagory()">
+              <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12 d-inline-block col-panel">
+                <div class="form-group row">
+                  <label for="type" class="col-md-3 col-form-label">
+                    Vendor <span class="ml-2">*</span>
+                  </label>
+                  <div class="col-md-9">
+                    <app-iautocomplete id="Vendor" name="Vendor" [Defaultvalue]="ExistingVendor"
+                      [Data]="AutoFillVendor">
+                    </app-iautocomplete>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="type" class="col-md-3 col-form-label">
+                    Catagory <span class="ml-2">*</span>
+                  </label>
+                  <div class="col-md-9">
+                    <app-iautocomplete id="Catagory" name="Catagory" [Defaultvalue]="ExistingCatagory"
+                      [Data]="AutoFillCatagory" (OnSelect)="VerifyCatagory($event)">
+                    </app-iautocomplete>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="BrandName" class="col-md-3 col-form-label">
+                    Brand<span class="ml-2">*</span>
+                  </label>
+                  <div class="col-md-9">
+                    <app-iautocomplete id="Brand" name="Brand" [Defaultvalue]="ExistingBrand"
+                      [Data]="AutoFillDropdownData"></app-iautocomplete>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="item" class="col-md-3 col-form-label">
+                    Item<span class="ml-2">*</span>
+                  </label>
+                  <div class="col-sm-9">
+                    <input type="text" ngModel [(ngModel)]="Item.ItemName" class="form-control" id="ItemName"
+                      name="ItemName" required placeholder="Item Name">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="sno" class="col-md-3 col-form-label">S.No.</label>
+                  <div class="col-md-9">
+                    <input type="text" ngModel class="form-control" id="SerialNumber" name="SerialNumber"
+                      placeholder="SNO" [(ngModel)]="Item.SerialNumber">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="quantity" class="col-md-3 col-form-label">Quantity</label>
+                  <div class="col-md-9">
+                    <input NumberType="true" ngModel class="form-control" id="Quantity" name="Quantity" required
+                      placeholder="Quantity" [(ngModel)]="Item.Quantity">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-lg-6 col-sm-6 col-xs-12 float-right col-panel">
+                <div class="form-group row">
+                  <label for="hsnno" class="col-md-3 col-form-label">HSN No: #</label>
+                  <div class="col-md-9">
+                    <input type="text" ngModel class="form-control" id="hsnno" name="hsnno" placeholder="HSN No #">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="mrp" class="col-md-3 col-form-label">
+                    M.R.P
+                  </label>
+                  <div class="col-md-9">
+                    <input FloatType="true" ngModel class="form-control" id="MRP" name="MRP" required
+                      placeholder="Max Retail Price" [(ngModel)]="Item.MRP">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="hprice" class="col-md-3 col-form-label">Actual Price</label>
+                  <div class="col-md-9">
+                    <input FloatType="true" ngModel class="form-control" id="ActualPrice" name="ActualPrice"
+                      placeholder="H. Price" [(ngModel)]="Item.ActualPrice">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="rprice" class="col-md-3 col-form-label">S. Price</label>
+                  <div class="col-md-9">
+                    <input FloatType="true" ngModel class="form-control" id="SellingPrice" name="SellingPrice"
+                      placeholder="S. Price" [(ngModel)]="Item.SellingPrice">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="ExpireOn" class="col-md-3 col-form-label">Expire On</label>
+                  <div class="col-md-9 p-0">
+                    <mat-form-field class="col-md-12 plain-date">
+                      <input matInput [matDatepicker]="picker" id="ExpiredOn" name="ExpiredOn" placeholder="Expire On">
+                      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+              <div class="actionBar" style="float: left;margin-top: 50px;">
+                <input type="hidden" ng-model="client.ClientUid" id="ClientUid" [(ngModel)]="Item.VendorUid"
+                  name="VendorUid" />
+                <input type="hidden" ng-model="client.StockUid" id="StockUid" name="StockUid"
+                  [(ngModel)]="Item.StockUid" />
+                <input type="hidden" ng-model="client.StockParentUid" id="StockParentUid" name="StockParentUid"
+                  value="" />
+                <button class="btn btn-default mr-1" (click)="ClearAllFields()">
+                  <i class="fa fa-refresh"></i>&nbsp; Reset</button>
+                <button class="btn btn-success"><i class="fa fa-filter"></i>&nbsp; Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

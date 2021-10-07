@@ -1,0 +1,73 @@
+<div class="right_col">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>Add Role <small>Add new role and allow read or add/edit permission.</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <div class="modal fade" id="facultyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal Alert</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="facultyModalMsg">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart Wizard -->
+        <div id="wizard" class="form_wizard wizard_horizontal">
+          <form class="col-md-12">
+            <div class="mt-2 mb-2 form-group">
+              <label>Role Name</label>
+              <input type="text" placeholder="Enter role name" id="rolename" class="form-control" />
+            </div>
+            <table class="table table-bordered">
+              <tbody class="text-left">
+                <tr>
+                  <th width="25%">Page Name</th>
+                  <th width="50%">Allow add/edit permisstion</th>
+                </tr>
+              </tbody>
+              <tbody class="text-left">
+                <tr *ngFor="let item of RolesDetail" [attr.index]="item.Index">
+                  <td>
+                    <i [attr.class]="item.Icon"></i>
+                    {{item.Name}}</td>
+                  <td>
+                    <div class="d-flex">
+                      <label class="checkbox-container vcenter-box">
+                        <input type="checkbox" class="mt-1" (change)="MarkPersmission(item.Name)" />
+                        <span class="checkmark"></span>
+                      </label>
+                      <span class="pl-4 text-muted">
+                        <span class="ml-2">{{item.Action}}</span>
+                        <span name="permission-desc" class="pl-2">[
+                          Allow only for view page.
+                          ]</span>
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="pt-4">
+              <button class="btn btn-primary" (click)="SubmitForm()">Add New Role</button>
+            </div>
+          </form>
+        </div>
+        <!-- End SmartWizard Content -->
+      </div>
+    </div>
+  </div>
+</div>

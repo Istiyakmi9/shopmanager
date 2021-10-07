@@ -1,0 +1,307 @@
+<div class="x_content position-inherit">
+  <div class="">
+    <div class="pl-0 pr-1 d-inline-block panel-body col-md-12 col-xs-12">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="pl-0 pr-0 form-group col-md-12 col-sm-12 d-inline-block">
+            <input id="ShopFilter" placeholder="Global search" class="form-control" (keyup)="FilterLocaldata($event)"
+              required="required" type="text" [disabled]="EditMode">
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-12">
+          <mat-checkbox [(ngModel)]="autosearch" value="eanblesearch" class="position-relative chk-search">Check me!
+          </mat-checkbox>
+        </div>
+        <div class="col-md-4 d-inline-block text-right no-padding">
+          <button type="submit" (click)="ResetFilter()" [disabled]="EditMode" class="btn btn-default mr-1"
+            [ngClass]="{'disabled': EditMode}">
+            <i class="fas fa-sync"></i>&ensp;Reset</button>
+          <button type="button" (click)="GetAdvanceFilter()" [disabled]="EditMode" class="btn btn-success"
+            [ngClass]="{'disabled': EditMode}">
+            <i class="fa fa-filter"></i>&ensp;Advance Search</button>
+        </div>
+      </div>
+      <div id="viewfeestimetable-dv" class="h-tbl">
+        <div id="dynamic-grid-table" class="table-responsive">
+          <table class="table jambo_table bulk_action">
+            <thead>
+              <tr class="headings">
+                <ng-container *ngFor="let col of BindingHeader" [ngSwitch]="col">
+                  <th *ngSwitchCase="'BH_Build_Checkbox'" class="chk-container">
+                    <input type="checkbox" (change)="HandleAllCheckBoxex($event)">
+                  </th>
+                  <th *ngSwitchDefault class="column-title">{{col}}</th>
+                </ng-container>
+                <th class="column-title text-center w-10 no-link last">
+                  <span class="nobr">Action</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody *ngIf="!IsEmptyRow">
+              <tr *ngFor="let item of TableResultSet;let odd = odd; let even = even;"
+                [ngClass]="{odd: odd%2 !== 0 && IsStriped, even: even }" [attr.billno]="item.Record.BillNum">
+                <ng-container *ngFor="let col of HeaderColumn" [ngSwitch]="col">
+                  <td *ngSwitchCase="'BH_Build_Checkbox'" class="chk-container">
+                    <input type="checkbox" class="chk-box" (change)="ManageCancelation($event)">
+                  </td>
+                  <td *ngSwitchDefault>
+                    <div [attr.name]="col" class="td-content">
+                      <span role="view">{{item.Record[col]}}</span>
+                      <input role="edit" name="ItemName" type="text" class="d-none" [attr.value]="item.Record[col]" />
+                    </div>
+                  </td>
+                </ng-container>
+                <td class="text-center">
+                  <div class="last dyn-last">
+                    <input type="hidden" name="currentObject" [attr.value]="item | json" />
+                    <div name="editdelete">
+                      <a href="javascript:void(0)" (click)="EditCurrent()" id="btnedit"
+                        class="tbl-action-icon-style a-icon">
+                        <i class="far fa-edit"></i>&nbsp;
+                      </a>
+                      <a href="javascript:void(0)" id="btndelete" (click)="DeleteRecord()"
+                        class="tbl-action-icon-style a-icon">
+                        <i class="far fa-trash-alt"></i>
+                      </a>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="IsEmptyRow">
+              <tr>
+                <td [attr.colspan]="TotalHeaders">
+                  <div class="empty-row">
+                    No record found.
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="50">
+                  <div class="col-md-12 p-0">
+                    <mat-paginator [length]="ItemCount" (page)="pageEvent=changePage($event)" [pageSize]="PageSize"
+                      [pageSizeOptions]="PageOptions"></mat-paginator>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div id="single-record" style="display: none;" class="mt-4 position-relative">
+          <a class="close-btn" (click)="CloseEdit()">
+            <i class="fa fa-times bg-font" aria-hidden="true"></i>
+          </a>
+          <div class="col-md-12">
+            <div class="col-12 text-left pt-1 mb-4">
+              <label>
+                <b>Customer Detail: </b>
+                <span name="ctx-name" class="mr-4"></span>
+                <br />
+                <b>Date: </b>
+                <span name="purchase-date" class="mr-4"></span>
+              </label>
+            </div>
+            <div class="col-12 d-flex text-right border-bottom">
+              <div class="mr-2">
+                <mat-form-field>
+                  <input matInput name="mPaidAmount" id="mPaidAmount" disabled placeholder="Paid Amount">
+                </mat-form-field>
+              </div>
+              <div class="mr-2">
+                <mat-form-field>
+                  <input matInput name="mDueAmount" placeholder="Due Amount" disabled>
+                </mat-form-field>
+              </div>
+              <div>
+                <mat-form-field>
+                  <input matInput name="mNewAmount" id="mNewAmount" placeholder="Enter Amount" (keyup)="ManageAmount()"
+                    FloatType="true">
+                </mat-form-field>
+              </div>
+              <div class="text-right w-50 align-on-line">
+                <button class="btn btn-outline-success mr-2" (click)="CloseEdit()">
+                  <i class="fa fa-times" aria-hidden="true"></i> Close</button>
+                <button class="btn btn-dark mr-4" (click)="UpdateRecord()">
+                  <i class="fa fa-pencil pr-1" aria-hidden="true"></i>Update</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="container p-0 m-0 mt-4">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="column-title">
+                    Customer Name
+                  </th>
+                  <th class="column-title">
+                    Amount Paid &nbsp;(<i class="fas fa-rupee-sign"></i>)
+                  </th>
+                  <th class="column-title">
+                    Amount Due &nbsp;(<i class="fas fa-rupee-sign"></i>)
+                  </th>
+                  <th class="column-title">
+                    Dated On
+                  </th>
+                </tr>
+              </thead>
+              <tbody *ngIf="CreditItems">
+                <tr *ngFor="let item of CreditItems">
+                  <td>
+                    <div class="pl-2">{{EditCustomerName}}</div>
+                  </td>
+                  <td>
+                    <div class="pl-2">{{item.PaidAmount}}</div>
+                  </td>
+                  <td>
+                    <div class="pl-2">{{item.CreditAmount}}</div>
+                  </td>
+                  <td>
+                    <div class="pl-2">{{item.CreatedOn | date}}</div>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="!CreditItems">
+                <tr>
+                  <td colspan="4">
+                    <div class="empty-row">
+                      No Periodic Credit Amount Found
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="manage-record" class="position-relative" style="display: none;">
+          <a class="close-btn" (click)="CloseEdit()">
+            <i class="fa fa-times bg-font" aria-hidden="true"></i>
+          </a>
+          <div class="col-md-12">
+            <div class="col-12 text-left pt-1 mb-4">
+              <label>
+                <b>Customer Detail: </b>
+                <span name="ctx-name" class="mr-4"></span>
+                <br />
+                <b>Date: </b>
+                <span name="purchase-date" class="mr-4"></span>
+              </label>
+            </div>
+
+            <div *ngFor="let canceledItems of CanceledItems" name="cancel-section" class="border-bottom">
+              <input type="hidden" name="canceledRecord" [value]="canceledItems | json">
+              <div name="cancelAndRefund" class="labled-form col-12 d-flex mb-3">
+                <div class="mr-2 w-100">
+                  <span>Paid Amount</span>
+                  <input name="mPaidAmount" class="form-control" [value]="canceledItems.AmountPaid" disabled
+                    placeholder="Paid Amount">
+                </div>
+                <div class="mr-2 w-100">
+                  <span>Due Amount</span>
+                  <input name="mDueAmount" class="form-control" [value]="canceledItems.AmountDue"
+                    placeholder="Due Amount" disabled>
+                </div>
+                <div class="mr-2 w-100">
+                  <span>Quantity</span>
+                  <input name="quantity" class="form-control" [value]="canceledItems.Quantity" disabled
+                    placeholder="Quantity">
+                </div>
+                <div class="mr-2 w-100">
+                  <span>Qty.# Returned</span>
+                  <input name="refundedQuantity" class="form-control" [value]="canceledItems.Quantity"
+                    placeholder="Qty.# Returned" FloatType="true" (keyup)="CalculateRefundAmount()">
+                </div>
+                <div class="w-100">
+                  <span>Refund Amount</span>
+                  <input name="refundAmount" class="form-control" [value]="canceledItems.AmountPaid"
+                    placeholder="Refund Amount" FloatType="true" (keyup)="HandleRefundAmount()">
+                </div>
+              </div>
+              <div class="col-12 d-flex">
+                <div class="col-12 p-0">
+                  <textarea rows="5" class="resion-area w-100 p-2 rounded text-muted" (focus)="EnableArea()"
+                    (blur)="DisableArea()" name="resion" placeholder="Enter resion for return and refund."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="align-on-line">
+                <button class="btn btn-outline-success mr-2" (click)="CloseEdit()">
+                  <i class="fa fa-times" aria-hidden="true"></i> Close</button>
+                <button class="btn btn-dark mr-4" (click)="CancelItemAndRefund()">
+                  <i class="fa fa-pencil pr-1" aria-hidden="true"></i>Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="debitnote-section" class="position-relative">
+          <a class="close-btn" (click)="CloseEdit()">
+            <i class="fa fa-times bg-font" aria-hidden="true"></i>
+          </a>
+          <div class="col-md-12 pt-5">
+            <div *ngFor="let canceledItems of CanceledItems" name="cancel-section" class="canceling-item">
+              <div class="col-12 text-left pt-1">
+                <label class="d-flex cancel-card-header">
+                  <div class="mr-4">
+                    <b>Customer Detail: </b>
+                    <span name="ctx-name" class="mr-4">{{canceledItems.CustomerName}}</span>
+                  </div>
+                  <div class="mr-4">
+                    <b>Date: </b>
+                    <span name="purchase-date" class="mr-4">{{canceledItems.CreatedOn}}</span>
+                  </div>
+                  <div>
+                    <b>Bill No.#: </b>
+                    <span name="billno" class="mr-4">{{canceledItems.BillNum}}</span>
+                  </div>
+                </label>
+              </div>
+              <input type="hidden" name="canceledRecord" [value]="canceledItems | json">
+              <div name="cancelAndRefund" class="labled-form col-12 d-flex mb-3">
+                <div class="mr-2 w-100">
+                  <span>Paid Amount</span>
+                  <input name="mPaidAmount" class="form-control" [value]="canceledItems.AmountPaid" disabled
+                    placeholder="Paid Amount">
+                </div>
+                <div class="mr-2 w-100">
+                  <span>Quantity</span>
+                  <input name="quantity" class="form-control" [value]="canceledItems.Quantity" disabled
+                    placeholder="Quantity">
+                </div>
+                <div class="mr-2 w-100">
+                  <span>Qty.# Returned</span>
+                  <input name="refundedQuantity" class="form-control" [value]="canceledItems.Quantity"
+                    placeholder="Qty.# Returned" FloatType="true" (keyup)="CalculateRefundAmount()">
+                </div>
+                <div class="w-100">
+                  <span>Refund Amount</span>
+                  <input name="refundAmount" class="form-control" [value]="canceledItems.AmountPaid"
+                    placeholder="Refund Amount" FloatType="true" (keyup)="HandleRefundAmount()">
+                </div>
+              </div>
+              <div class="col-12 d-flex">
+                <div class="col-12 p-0">
+                  <textarea rows="3" class="resion-area w-100 p-2 rounded text-muted" (focus)="EnableArea()"
+                    (blur)="DisableArea()" name="resion" placeholder="Enter resion for return and refund."></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="align-on-line">
+                <button class="btn btn-outline-success mr-2" (click)="CloseEdit()">
+                  <i class="fa fa-times" aria-hidden="true"></i> Close</button>
+                <button class="btn btn-dark mr-4" (click)="CancelItemAndRefund()">
+                  <i class="fa fa-pencil pr-1" aria-hidden="true"></i>Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

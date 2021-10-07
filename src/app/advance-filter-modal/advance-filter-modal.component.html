@@ -1,0 +1,458 @@
+<div [ngSwitch]="componentFilterName">
+  <div class="modal-container" *ngSwitchCase="'sales'">
+    <div class="container p-0">
+      <form [formGroup]="salesAndPurchasesForm">
+        <div class="col-md-12 pr-0 pl-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">
+                <b>Advance filter for {{componentFilterName | uppercase }} report.</b>
+              </div>
+              <div class="card-text" name="main-card">
+                <div class="row p-0 m-0">
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <label for="customer">Customer Name</label>
+                      <input type="text" class="simple-field form-control" name="customer" formControlName="customer"
+                        placeholder="Customer">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="serialno">Serial No #</label>
+                      <input type="text" class="simple-field form-control" name="serialno" formControlName="serialno"
+                        placeholder="Serial No#">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0 m-0">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="Catagory">Item Catagory</label>
+                      <input type="text" class="simple-field form-control" name="catagory" formControlName="catagory"
+                        placeholder="Catagory Type">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="BrandName">Brand Name</label>
+                      <input type="text" class="simple-field form-control" name="brandName" formControlName="brandName"
+                        placeholder="Brand Name">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="ProductName">Product Name</label>
+                      <input type="text" class="simple-field form-control" name="productName"
+                        formControlName="productName" placeholder="Product Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 m-0 p-0">
+                  <div class="card">
+                    <div class="card-text">
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="price">Price</label>
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend" name="popupmenu">
+                              <button type="button"
+                                class="simple-field btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <button type="button" name="queryevent" value="Equals to"
+                                class="simple-field btn btn-outline-secondary">Equals to</button>
+                              <div class="dropdown-menu" name="dropdown-menu">
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Equals to">Equals to</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Greater than">Greater
+                                  than</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Less than">Less than</a>
+                              </div>
+                            </div>
+                            <input type="text" class="simple-field form-control" name="price" formControlName="price"
+                              aria-label="Text input with segmented dropdown button" FloatType="true">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="quantity">Quantity #</label>
+                          <div class="input-group mb-3">
+                            <input type="text" class="simple-field form-control" name="quantity"
+                              formControlName="quantity" placeholder="Quantity #" (keypress)="AllowNumber($event)">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-inline-block float-right mt-4">
+                  <button type="button" id="btnClose" class="btn btn-outline-danger mr-2" (click)="onNoClick()">
+                    <i class="fas fa-sync"></i>&nbsp; Close</button>
+                  <button type="button" class="btn btn-primary" (click)="onSubmitClick()">
+                    <i class="fas fa-filter"></i>&nbsp;Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-container" *ngSwitchCase="'purchases'">
+    <div class="container p-0">
+      <form [formGroup]="salesAndPurchasesForm">
+        <div class="col-md-12 pr-0 pl-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">
+                <b>Advance filter for {{componentFilterName | uppercase }} report.</b>
+              </div>
+              <div class="card-text" name="main-card">
+                <div class="row p-0 m-0">
+                  <div class="col-md-8">
+                    <div class="form-group">
+                      <label for="customer">Customer Name</label>
+                      <input type="text" class="simple-field form-control" name="customer" formControlName="customer"
+                        placeholder="Customer">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="serialno">Serial No #</label>
+                      <input type="text" class="simple-field form-control" name="serialno" formControlName="serialno"
+                        placeholder="Serial No#">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0 m-0">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="Catagory">Item Catagory</label>
+                      <input type="text" class="simple-field form-control" name="catagory" formControlName="catagory"
+                        placeholder="Catagory Type">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="BrandName">Brand Name</label>
+                      <input type="text" class="simple-field form-control" name="brandName" formControlName="brandName"
+                        placeholder="Brand Name">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="ProductName">Product Name</label>
+                      <input type="text" class="simple-field form-control" name="productName"
+                        formControlName="productName" placeholder="Product Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 m-0 p-0">
+                  <div class="card">
+                    <div class="card-text">
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="price">Price</label>
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend" name="popupmenu">
+                              <button type="button"
+                                class="simple-field btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <button type="button" name="queryevent" value="Equals to"
+                                class="simple-field btn btn-outline-secondary">Equals to</button>
+                              <div class="dropdown-menu" name="dropdown-menu">
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Equals to">Equals to</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Greater than">Greater
+                                  than</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Less than">Less than</a>
+                              </div>
+                            </div>
+                            <input type="text" class="simple-field form-control" name="price" formControlName="price"
+                              aria-label="Text input with segmented dropdown button" FloatType="true">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="quantity">Quantity #</label>
+                          <div class="input-group mb-3">
+                            <input type="text" class="simple-field form-control" name="quantity"
+                              formControlName="quantity" placeholder="Quantity #" (keypress)="AllowNumber($event)">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-inline-block float-right mt-4">
+                  <button type="button" id="btnClose" class="btn btn-outline-danger mr-2" (click)="onNoClick()">
+                    <i class="fas fa-sync"></i>&nbsp; Close</button>
+                  <button type="button" class="btn btn-primary" (click)="onSubmitClick()">
+                    <i class="fas fa-filter"></i>&nbsp;Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-container" *ngSwitchCase="'customer-report'">
+    <div class="container p-0">
+      <form [formGroup]="purchasesForm">
+        <div class="col-md-12 pr-0 pl-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">
+                <b>Advance filter for {{componentFilterName | uppercase }} report.</b>
+              </div>
+              <div class="card-text" name="main-card">
+                <div class="row p-0">
+                  <div class="col-md-8 d-inline-block">
+                    <div class="form-group">
+                      <label for="customer">Vendor Name</label>
+                      <input type="text" class="simple-field form-control" name="customer" formControlName="customer"
+                        placeholder="Customer">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="serialno">GSTIN No #</label>
+                      <input type="text" class="simple-field form-control" name="gstinno" formControlName="gstinno"
+                        placeholder="GSTIN No#">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0">
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="Catagory">Item Catagory</label>
+                      <input type="text" class="simple-field form-control" name="catagory" formControlName="catagory"
+                        placeholder="Catagory Name">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="BrandName">Brand Name</label>
+                      <input type="text" class="simple-field form-control" name="brandName" formControlName="brandName"
+                        placeholder="Brand Name">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="ProductName">Product Name</label>
+                      <input type="text" class="simple-field form-control" name="productName"
+                        formControlName="productName" placeholder="Product Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0">
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="Catagory">Mobile No #</label>
+                      <input type="text" class="simple-field form-control" name="mobileno" formControlName="mobileno"
+                        placeholder="Mobile No #">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="BrandName">Email Id</label>
+                      <input type="text" class="simple-field form-control" name="emailId" formControlName="emailId"
+                        placeholder="Email Id">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="ProductName">Shop Name</label>
+                      <input type="text" class="simple-field form-control" name="shopname" formControlName="shopname"
+                        placeholder="Shop Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12 pl-0 pr-0">
+                  <div class="card">
+                    <div class="card-text">
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="price">Price</label>
+                          <div class="input-group mb-3">
+                            <div class="input-group-prepend" name="popupmenu">
+                              <button type="button"
+                                class="simple-field btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                              </button>
+                              <button type="button" name="queryevent" value="Equals to"
+                                class="simple-field btn btn-outline-secondary">Equals to</button>
+                              <div class="dropdown-menu" name="dropdown-menu">
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Equals to">Equals to</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Greater than">Greater
+                                  than</a>
+                                <a class="dropdown-item" (click)="ManageDropmenuEvent()" name="Less than">Less than</a>
+                              </div>
+                            </div>
+                            <input type="text" class="simple-field form-control" name="price"
+                              aria-label="Text input with segmented dropdown button" FloatType="true">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 mt-2 d-inline-block">
+                        <div class="form-group">
+                          <label for="quantity">Quantity #</label>
+                          <div class="input-group mb-3">
+                            <input type="text" class="simple-field form-control" name="quantity"
+                              placeholder="Quantity #" (keypress)="AllowNumber($event)">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-inline-block float-right mt-4">
+                  <button type="button" id="btnClose" class="btn btn-outline-danger mr-2" (click)="onNoClick()">
+                    <i class="fas fa-sync"></i>&nbsp; Close</button>
+                  <button type="button" class="btn btn-primary" (click)="onSubmitClick()">
+                    <i class="fas fa-filter"></i>&nbsp;Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-container" *ngSwitchDefault>
+    <div class="container p-0">
+      <form>
+        <div class="col-md-12 pr-0 pl-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">
+                <b>Advance filter for {{componentFilterName | uppercase }} report.</b>
+              </div>
+              <div class="card-text" name="main-card">
+                <div class="col-md-12 pl-0 pr-0">
+                  <div class="card">
+                    <div class="card-text">
+                      <div class="form-group">
+                        <div class="no-page">Advance filter is not available for this page. Please contact to admin.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-inline-block float-right mt-4">
+                  <button type="button" id="btnClose" class="btn btn-outline-danger mr-2" (click)="onNoClick()">
+                    <i class="fas fa-sync"></i>&nbsp; Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- <div class="modal-container" *ngSwitchCase="'customer-report'">
+    <div class="container p-0">
+      <form>
+        <div class="col-md-12 pr-0 pl-0">
+          <div class="card">
+            <div class="card-body">
+              <div class="card-title">
+                <b>Advance filter for {{componentFilterName | uppercase }} report.</b>
+              </div>
+              <div class="card-text" name="main-card">
+                <div class="row p-0">
+                  <div class="col-md-8 d-inline-block">
+                    <div class="form-group">
+                      <label for="customer">Name</label>
+                      <input type="text" class="simple-field form-control" name="customer"
+                        placeholder="Name Of The Candidate">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="serialno">GSTIN No. #</label>
+                      <input type="text" class="simple-field form-control" name="gstinno" placeholder="GSTIN No#">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0">
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="mobileno">Mobile No. #</label>
+                      <input type="text" class="simple-field form-control" name="mobileno" placeholder="Mobile no.#">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="emailid">Email Id.</label>
+                      <input type="text" class="simple-field form-control" name="emailid" placeholder="Email Id">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="shopname">Shop Name</label>
+                      <input type="text" class="simple-field form-control" name="shopname" placeholder="Shop Name">
+                    </div>
+                  </div>
+                </div>
+                <div class="row p-0">
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="shopno">Shop No. #</label>
+                      <input type="text" class="simple-field form-control" name="shopno" placeholder="Shop no.#">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="state">State</label>
+                      <input type="text" class="simple-field form-control" name="state" placeholder="State">
+                    </div>
+                  </div>
+                  <div class="col-md-4 d-inline-block">
+                    <div class="form-group">
+                      <label for="city">City</label>
+                      <input type="text" class="simple-field form-control" name="city" placeholder="City">
+                    </div>
+                  </div>
+                </div>
+                <div class="d-inline-block float-right mt-4">
+                  <button type="button" id="btnClose" class="btn btn-outline-danger mr-2" (click)="onNoClick()">
+                    <i class="fas fa-sync"></i>&nbsp; Close</button>
+                  <button type="button" class="btn btn-primary" (click)="onSubmitClick()">
+                    <i class="fas fa-filter"></i>&nbsp;Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div> -->
+</div>
+
+
+<div class="modal-container" *ngIf="componentFilterName == 'customer'">
+  <div class="container">
+    Customer filter
+  </div>
+</div>
+
+<div class="modal-container" *ngIf="componentFilterName == 'vendor'">
+  <div class="container">
+    Vendor filter
+  </div>
+</div>
+
+<a class="closed-anc" (click)="onNoClick()">
+  <i class="fas fa-times"></i>
+</a>

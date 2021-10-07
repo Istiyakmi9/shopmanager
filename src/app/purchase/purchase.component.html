@@ -1,0 +1,276 @@
+<div class="" role="main">
+  <div id="billing" class="h-100">
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-xs-12 x_panel mb-0 pb-0">
+      <div class="x_title panel-title">
+        <div class="col-md-8 col-sm-12 d-inherit">
+          <h2>
+            Item selling<small>View and add new purchase item(s)</small>
+          </h2>
+        </div>
+      </div>
+      <div *ngIf="IsDataReady">
+        <form class="mb-4" [formGroup]="purchaseFormGroup">
+          <div class="col-md-12 pr-0 pl-0 d-inherit">
+            <div id="wizard" class="float-left w-100">
+              <div class="x_content pr-0 pl-0">
+                <div id="uploadsec" role="tabpanel" data-example-id="togglable-tabs">
+                  <ul id="vendor_cust_registration" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li *ngIf="IsPurchasePage" role="presentation" class="nav-item" name="classmasterdata"
+                      file="ClassMaster">
+                      <a name="customer" class="nav-link active" id="customer-tab" role="tab" data-toggle="tab"
+                        aria-controls="customer" aria-selected="true">Existing Customer</a>
+                    </li>
+                    <li *ngIf="!IsPurchasePage" role="presentation" class="nav-item" name="classmasterdata"
+                      file="ClassMaster">
+                      <a name="customer" class="nav-link active" id="customer-tab" role="tab" data-toggle="tab"
+                        aria-controls="customer" aria-selected="true">Existing Customer</a>
+                    </li>
+                  </ul>
+
+                  <div id="myTabContent" formGroupName="CustomerDetail" class="tab-content">
+                    <!-- Existing customer -->
+                    <div role="tabpanel" class="tab-pane fade show active" id="existingcustomer"
+                      aria-labelledby="customer-tab">
+                      <div class="col-md-3 d-inline-block">
+                        <label>Vendor name</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <app-iautocomplete id="CustomerByName" [Data]="CustomerDetail">
+                            </app-iautocomplete>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-9 d-inline-block" *ngIf="IsPurchasePage">
+                        <label>Bill no. #</label>
+                        <div class="form-group row">
+                          <div class="col-md-12">
+                            <input name="BillNo" id="BillNo" class="form-control" required formControlName="BillNo"
+                              placeholder="Enter bill no. #" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="!IsPurchasePage" class="tab-content">
+                    <!-- Existing customer -->
+                    <div role="tabpanel" class="tab-pane fade show active" aria-labelledby="customer-tab">
+                      <div class="col-md-12 mt-2 d-inline-block">
+                        <label>Add Catagory, Brand and Item using below table.</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-xs-12 pt-2 pt-2 panel-body pl-0 pr-0">
+            <!-- <app-dynamic-table [pageData]="DynamicTableDetail"></app-dynamic-table> -->
+            <div class="table-responsive">
+              <!--Table form purchase-->
+              <table *ngIf="IsPurchasePage" id="billtable" class="table table-bordered" style="width:100%">
+                <thead>
+                  <tr>
+                    <th rowspan="2" class="text-center">#</th>
+                    <th rowspan="2">Item</th>
+                    <th rowspan="2">Desc/Qty.#</th>
+                    <th rowspan="2" class="w-8">Price/-</th>
+                    <th rowspan="2" class="w-10">Qty #</th>
+                    <th rowspan="2" class="w-10">Tax Amount</th>
+                    <th rowspan="2">Total</th>
+                  </tr>
+                </thead>
+                <tbody id="billing-body" formArrayName="GridDetail">
+                  <tr *ngFor="let item of BillingFormGroup; let i = index" [formGroupName]="i" name="item-record"
+                    [attr.index]="i">
+                    <input hidden="hidden" name="currentStockDetail" />
+                    <td name="table-index">
+                      <div class="m-0 p-0 text-center">
+                        <label class="m-0 p-0">{{i + 1}}</label>
+                      </div>
+                    </td>
+                    <td [ngStyle]="{ width: i === 0 ? '30%' : 'auto' }">
+                      <div name="parent-select" class="select-autofill-parent">
+                        <app-iautocomplete name="StockDetail" [ClassName]="FieldClass" [Tabindex]="[i * 4 + 1]"
+                          [Data]="item.StockDetail" (OnSelect)="HandleAutofillData($event)">
+                        </app-iautocomplete>
+                        <input type="hidden" name="ItemName" value="" formControlName="ItemName" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="description">
+                        <input type="text" [attr.Tabindex]="[i * 4 + 2]" formControlName="Description"
+                          (keypress)="HandleDescription($event)" name="Description" (keyup)="ManageDescription($event)"
+                          (focus)="PrepareBinding($event)" class="tbl-input border-0 br-0 bg-white" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="price">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="Price" FloatType="true"
+                          (keypress)="ManageDescription($event)" formControlName="Price"
+                          [attr.Tabindex]="[i * 4 + 3]" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="quantity">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" readonly name="Quantity"
+                          formControlName="Quantity" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="quantity">
+                        <input type="text" readonly class="tbl-input border-0 br-0 bg-white" name="TaxAmount"
+                          formControlName="TaxAmount" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0">
+                        <input readonly class="tbl-input border-0 br-0 bg-white" name="TotalAmount"
+                          formControlName="TotalAmount" />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot formGroupName="OtherDetail">
+                  <tr>
+                    <th class="bg-white" colspan="3">
+                      <label class="d-block final-lbl mt-4">Transpotation detail &nbsp;
+                        <div class="float-right pr-2">
+                          <i class="fa fa-rupee"></i>&nbsp;
+                        </div>
+                      </label>
+                      <div class="float-left w-100 mt-2">
+                        <label class="position-relative t-20">Transport name:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right container-100 w-75">
+                          <mat-form-field class="inputfield">
+                            <input type="text" matInput placeholder="Transport name" id="TransportName"
+                              name="TransportName" formControlName="TransportName">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                      <div class="float-left w-100">
+                        <label class="position-relative t-20">Vehicle no:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right container-100 w-75">
+                          <mat-form-field>
+                            <input type="text" matInput placeholder="Vehicle no. #" id="VehicleNo" name="VehicleNo"
+                              formControlName="VehicleNo">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </th>
+                    <th class="bg-white" colspan="4">
+                      <label class="d-block final-lbl mt-4">Grand Total &nbsp;
+                        <div class="float-right pr-2">
+                          <i class="fas fa-rupee-sign"></i>&nbsp;
+                          <label class="position-relative">{{PurchasedTotalPrice}}&nbsp;</label>
+                        </div>
+                      </label>
+                      <div class="float-left w-100 mt-2">
+                        <label class="position-relative t-20">Amount Paid:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right">
+                          <mat-form-field class="inputfield">
+                            <input type="text" matInput FloatType="true" (keyup)="FindDueAmount($event)"
+                              placeholder="Amount paid" id="PaidAmount" name="PaidAmount" formControlName="PaidAmount">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                      <div class="float-left w-100">
+                        <label class="position-relative t-20">Amount Due:&nbsp; (<i
+                            class="fas fa-rupee-sign"></i>)</label>
+                        <div class="float-right">
+                          <mat-form-field>
+                            <input matInput placeholder="Amount due" disabled id="DueAmount" name="DueAmount"
+                              class="disabled" formControlName="DueAmount">
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
+              <!--Table for adding new items-->
+              <table *ngIf="!IsPurchasePage" id="billtable" class="table table-bordered" style="width:100%">
+                <thead>
+                  <tr>
+                    <th rowspan="2" class="text-center">#</th>
+                    <th rowspan="2">Catagory</th>
+                    <th rowspan="2">Brand</th>
+                    <th rowspan="2">Item</th>
+                    <th rowspan="2" class="w-8">S/Price</th>
+                    <th rowspan="2" class="w-8">A/Price</th>
+                    <th rowspan="2" class="w-12">Qty#</th>
+                  </tr>
+                </thead>
+                <tbody id="newitems-body" formArrayName="GridDetail">
+                  <tr *ngFor="let item of BillingFormGroup; let i = index" [formGroupName]="i" name="item-record"
+                    [attr.index]="i">
+                    <input hidden="hidden" name="currentStockDetail" />
+                    <td name="table-index">
+                      <div class="m-0 p-0 text-center">
+                        <label class="m-0 p-0">{{i + 1}}</label>
+                      </div>
+                    </td>
+                    <td [ngStyle]="{ width: i === 0 ? '30%' : 'auto' }">
+                      <div *ngIf="!IsPurchasePage" name="parent-select" class="select-autofill-parent">
+                        <app-iautocomplete name="StockDetail" [ClassName]="FieldClass" [Tabindex]="[i * 6 + 1]"
+                          [Data]="item.StockDetail" (OnSelect)="HandleAutofillData($event)">
+                        </app-iautocomplete>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="brandname">
+                        <input type="text" [attr.Tabindex]="[i * 6 + 2]" formControlName="BrandName" name="BrandName"
+                          class="tbl-input border-0 br-0 bg-white" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="itemanme">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="ItemName"
+                          formControlName="ItemName" [attr.Tabindex]="[i * 6 + 3]" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="m-0 p-0" name="SellingPrice">
+                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="SellingPrice"
+                          formControlName="SellingPrice" [attr.Tabindex]="[i * 6 + 4]" />
+                      </div>
+                    </td>
+                    <td>
+                      <div name="parent-select" class="select-autofill-parent">
+                        <input class="tbl-input border-0 br-0 bg-white" name="ActualPrice" [attr.Tabindex]="[i * 6 + 5]"
+                          formControlName="ActualPrice" />
+                      </div>
+                    </td>
+                    <td>
+                      <div name="parent-select" class="select-autofill-parent">
+                        <input [attr.Tabindex]="[i * 6 + 6]" class="tbl-input border-0 br-0 bg-white" name="Qty"
+                          formControlName="Qty" />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!--Table-->
+            </div>
+            <div class="col-md-4 col-sm-12 pr-0 float-right text-right pb-2">
+              <button class="btn btn-outline-primary mr-2" (click)="AddMoreRows()">
+                <i class="fa fa-plus pr-2" aria-hidden="true"></i>Add Row
+              </button>
+              <button class="btn btn-secondary" (click)="SubmitData()">
+                <i class="fa fa-file-text pr-2" aria-hidden="true"></i>Submit
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div *ngIf="!IsDataReady">
+        <div class="x_panel no-text text-center col-12">
+          <p class="text-muted">NO DATA FOUND. IT SEEEMS LIKE EVERYTHING IS EMPTY, SO PLEASE ADD YOUR DATA.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

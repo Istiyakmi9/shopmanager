@@ -1,0 +1,15 @@
+<div class="right_col" role="main">
+  <div id="client">
+    <div class="clearfix"></div>
+    <div class="col-md-12 col-xs-12 x_panel mb-0">
+      <div class="x_title panel-title">
+        <h2>Sold Item(s)<small>View and add sold item(s)</small></h2>
+        <div class="clearfix"></div>
+      </div>
+      <div class="col-md-12 col-xs-12 pt-2 pt-2 panel-body pl-0 pr-0">
+        <app-dynamic-table [pageData]="DynamicTableDetail" (FireFilterSubmit)="FilterPageData($event)">
+        </app-dynamic-table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,245 @@
+<div class="right_col" role="main">
+  <div class="x_panel">
+    <div class="x_content">
+      <div class="row">
+        <!-- CONTENT MAIL -->
+        <div class="col-12 mb-0 pb-0" id="nonprintable" *ngIf="!IsPurchasedInvoid">
+          <div class="x_title panel-title pl-0">
+            <div class="col-md-8 col-sm-12 d-inherit p-0">
+              <h2>
+                Item selling<small>View and add new purchase item(s)</small>
+              </h2>
+            </div>
+          </div>
+          <div class="d-flex x_panel auto-hight pb-0">
+            <div class="col-4">
+              <div class="form-group m-0">
+                <label class="font-weight-bold col-form-label col-md-3 col-sm-3 col-xs-12">
+                  Date
+                </label>
+                <div class="col-12">
+                  <mat-form-field class="w-100 plain-date">
+                    <input matInput id="billDate" name="billDate" [matDatepicker]="picker"
+                      [(ngModel)]="InitialDob.billDate">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <span class="font-weight-bold bill-title">Invoice / Bill no.#</span>
+              <app-iautocomplete id="Billno" [Data]="InvoiceDetail" (OnSelect)="GetBill()"></app-iautocomplete>
+            </div>
+            <div class="col-2 position-relative">
+              <button class="btn btn-outline-success cust-btn" (click)="GetBilltoView()">Get Invoice</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 bill-dv" [ngClass]="{'showbill': IsReady}" id="invoice-sec" *ngIf="IsReady">
+          <div class="">
+            <div class="clearfix"></div>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="x_panel">
+                  <div class="x_content">
+                    <section class="content invoice">
+                      <!-- title row -->
+                      <div class="row">
+                        <div class="col-12 invoice-header">
+                          <h1>
+                            <i class="fa fa-globe"></i> Payment.
+                            <div class="float-right">
+                              <small class="mr-4">Date: {{PaymentDate}}</small>
+                              <button class="btn btn-default" (click)="getInvoicedPdf()"><i class="fa fa-print"></i>
+                                Print</button>
+                            </div>
+                          </h1>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- info row -->
+                      <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                          <p class="p-heading">
+                            From
+                          </p>
+                          <address class="fs-13">
+                            <strong>{{VendorDetail.Name}}</strong>
+                            <br>Address: {{VendorDetail.Address}}
+                            <br>Shop No.#: {{VendorDetail.ShopPhoneNo}}
+                            <br>Mobile: {{VendorDetail.MobileNo}}
+                            <br>Email: {{VendorDetail.EmailId}}
+                            <br>GST/Aadahar: {{VendorDetail.EmailId}}
+                          </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 invoice-col">
+                          <p class="p-heading">
+                            To, Customer
+                          </p>
+                          <address class="fs-13">
+                            <strong>{{CustomerInfo.CustomerName}}</strong>
+                            <br><span name="address">Address: &nbsp; {{CustomerInfo.FullAddress}}</span>
+                            <br><span name="gstno">GST IN no.#&nbsp; {{CustomerInfo.GSTNo}}</span>
+                            <br><span name="mobile">Mobile no#:&nbsp; {{CustomerInfo.MobileNo}}</span>
+                            <br><span name="phone">Phone no#:&nbsp;{{CustomerInfo.ShopPhoneNumber}}</span>
+                            <br>Email: &nbsp;{{CustomerInfo.EmailId}}
+                          </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="pt-4 col-sm-4 invoice-col fs-13">
+                          <b>Bill No:</b> {{VendorDetail.InVoiceNo}}
+                          <br>
+                          <b>Payment Date:</b> {{PaymentDate}}
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+                      <!-- Table row -->
+                      <div class="row" style="margin-bottom: 0px;">
+                        <div class="col-sm-12 info-table">
+                          <table class="table student-info-table"
+                            style="margin-bottom: 0px; border: 1px solid #d9d9d9;">
+                            <thead>
+                              <tr>
+                                <th colspan="3" class="stud-info-head">
+                                  Customer Detail
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td class="w-25">Name : &nbsp; <a>{{CustomerInfo.CustomerName}}</a></td>
+                                <td class="w-50">Shop Name : &nbsp; {{CustomerInfo.ShopName}}</td>
+                                <td class="w-25">Mobile No# : &nbsp; {{CustomerInfo.MobileNo}}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="col-12 table" style="margin-bottom: 4px;">
+                          <table class="table" style="margin-bottom: 0px; border: 1px solid #d9d9d9;">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Price</th>
+                                <th>Qty. #</th>
+                                <th>IGST</th>
+                                <th>SGST</th>
+                                <th>CGST</th>
+                                <th>Total Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let item of ItemRows;let i = index;">
+                                <td class="tble-td text-center" style="width: 3%;">{{i + 1}}</td>
+                                <td class="tble-td" style="width: 52%;">
+                                  <span>{{item.ItemName}}</span>
+                                  <span class="catagoryitem">{{item.CatagoryName}}</span>
+                                </td>
+                                <td class="tble-td" style="width: 11%;">{{item.Price}}</td>
+                                <td class="tble-td" style="width: 7%;">{{item.Quantity}}</td>
+                                <td class="tble-td" style="width: 5%;">{{item.IGST}}</td>
+                                <td class="tble-td" style="width: 5%;">{{item.SGST}}</td>
+                                <td class="tble-td" style="width: 5%;">{{item.CGST}}</td>
+                                <td class="tble-td" style="width: 12%;">{{item.TotalPrice}}</td>
+                              </tr>
+                              <tr>
+                                <td colspan="3" style="width: 73%;">
+                                  <div>Logo and other informatic data will come here</div>
+                                </td>
+                                <td colspan="5" style="width: 27%;">
+                                  <div class="float-left w-100">
+                                    <div class="float-left"><b>Grand Total&nbsp;</b></div>
+                                    <div class="float-right"><i class="fa fa-rupee"></i>&nbsp;
+                                      {{GrandTotal}}</div>
+                                  </div>
+                                  <div class="w-100 t-border float-left mt-2 pt-2">
+                                    <div class="float-left w-100">
+                                      <div class="float-left"><b>Amount Paid&nbsp;</b></div>
+                                      <div class="float-right"><i class="fa fa-rupee"></i>&nbsp;
+                                        {{AmountPaid}}</div>
+                                    </div>
+                                    <div class="float-left w-100">
+                                      <div class="float-left"><b>Amount Due&nbsp;</b></div>
+                                      <div class="float-right"><i class="fa fa-rupee"></i>&nbsp;
+                                        {{AmountDue}}</div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+                      <div class="row sig-footer">
+                        <div class="footer-dv footer-left">
+                          <p>Shop stamp</p>
+                        </div>
+                        <div class="footer-dv footer-right" style="border: none;">
+                          <p>Authorized signature</p>
+                        </div>
+                      </div>
+                      <!-- /.row -->
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 col-sm-12 table-responsive" *ngIf="!IsReady">
+          <table class="table jambo_table bulk_action">
+            <thead>
+              <tr>
+                <th>Ctx Name</th>
+                <th>Bill No.#</th>
+                <th>Date</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="BillingData.length > 0">
+              <tr *ngFor="let item of BillingData">
+                <td>
+                  <span>
+                    {{item.CustomerName}}
+                  </span>
+                </td>
+                <td>
+                  <span>
+                    {{item.BillNum}}
+                  </span>
+                </td>
+                <td>
+                  <span class="">
+                    {{item.CreatedOn | date}}
+                  </span>
+                </td>
+                <td class="text-center action-center">
+                  <a href="javascript:void(0)" (click)="ViewBill(item.BillNum)" id="btnedit"
+                    class="tbl-action-icon-style a-icon">
+                    <i class="far fa-edit"></i>&nbsp;
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="BillingData.length === 0">
+              <tr>
+                <td [attr.colspan]="4">
+                  <div class="empty-row">
+                    No record found.
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /CONTENT MAIL -->
+      </div>
+    </div>
+  </div>
+</div>

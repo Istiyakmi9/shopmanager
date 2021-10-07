@@ -1,0 +1,192 @@
+.stud-info {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.stud-info tr {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.stud-info td {
+  padding: 8px 0px;
+}
+
+.stud-dv {
+  width: 30%;
+  margin: auto 10px;
+  display: inline-block;
+}
+
+.invoie-total {
+  width: 35%;
+  margin: auto 10px;
+  display: inline-block;
+}
+
+.action {
+  margin-top: 30px;
+}
+
+.infodv {
+  border: 1px solid #d9d9d9;
+  margin: auto 0px;
+  padding: 25px 0px;
+}
+
+td,
+th {
+  border: 1px solid #d9d9d9;
+}
+
+.student-info-table td {
+  border: none;
+}
+
+.info-table {
+  margin-bottom: 4px;
+  width: 100%;
+}
+
+.stud-info-head {
+  font-weight: bold;
+}
+
+.sig-footer {
+  border: 1px solid #d9d9d9;
+  margin: auto 0px;
+}
+
+.footer-dv {
+  width: 32.9999999%;
+  display: inline-block;
+  height: 100px;
+  text-align: center;
+  border-right: 1px solid #d9d9d9;
+}
+
+.footer-left {
+  width: calc(73% + 2px) !important;
+}
+
+.footer-right {
+  width: calc(27% - 2px) !important;
+}
+
+.footer-dv p {
+  position: relative;
+  top: 75%;
+  border-top: 1px solid #d9d9d9;
+  margin: auto 14%;
+  padding-top: 2px;
+}
+
+.footer-dv span {
+  position: relative;
+  top: 40%;
+}
+
+.invoice-header {
+  border-bottom: 1px solid #d9d9d9;
+  margin-bottom: 16px;
+}
+
+.student-info-table {
+  width: 100%;
+}
+
+.tble-td {
+  padding: 2px 0px 0px 6px !important;
+  position: relative;
+}
+
+.catagoryitem {
+  position: absolute;
+  right: 4px;
+  font-size: 12px;
+  top: 5px;
+  color: #989494;
+}
+
+.p-heading {
+  margin-bottom: 10px !important;
+  border-bottom: 1px solid #d9d9d9;
+  width: 80%;
+}
+
+.navigation-div>a {
+  color: darkblue !important;
+  font-weight: bold;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+
+.navigation-div {
+  border-bottom: 2px solid #a7a6a6;
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+}
+
+.auto-hight {
+  min-height: auto !important;
+}
+
+.bill-title {
+  line-height: 34px;
+}
+
+.showbill {
+  opacity: 1 !important;
+  transition: opacity .5s ease-in;
+}
+
+.bill-dv {
+  opacity: 0;
+}
+
+.table td {
+  padding: 0px !important;
+}
+
+.td-content span,
+input {
+  padding-left: 10px;
+}
+
+.pagination a {
+  cursor: pointer;
+}
+
+.w-10 {
+  width: 10% !important;
+}
+
+.table th {
+  padding: 6px 0px 6px 8px;
+}
+
+.table td,
+th {
+  border: 1px solid #d9d9d9;
+}
+
+
+.table span {
+  padding-left: 10px;
+}
+
+.action-center {
+  width: 6%;
+}
+
+.cust-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 0px;
+}
+
+.empty-row {
+  text-align: center;
+  margin: 60px 0px;
+  font-size: 20px;
+  color: #cacaca;
+}

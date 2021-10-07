@@ -1,0 +1,118 @@
+<div class="col-md-12">
+    <div class="col-md-10 d-flex justify-content-center">
+      <div class="col-md-4">
+        <div class="w-100 mt-4 text-center">
+          Bottomhalf Pvt. Ltd
+        </div>
+        <div class="card p-4 mt-5">
+          <form [formGroup]="SignInForm" (submit)="doLogin()" class="mt-4">
+            <div class="form-group">
+              <label>Username</label>
+              <input placeholder="Username" class="form-control" name="Username" 
+              required formControlName="Username">
+            </div>
+
+            <div class="form-group mt-2">
+              <label>Password</label>
+              <input type="password" placeholder="Password" class="form-control" 
+              name="Password" required formControlName="Password">
+            </div>
+            <p class="forgot-pass">Forgot password?</p>
+            <button class="btn btn-danger w-100 mb-2" type="submit">Sign
+              In</button>
+            <button type="button" class="btn btn-outline-info w-100">Connect with Gmail</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-10 float-left d-flex justify-content-center">
+      <div id="signup" class="col-md-10 dnone card p-4 signup-card">
+        <div class="w-100 signup-space text-center mb-4">
+          Bottomhalf Pvt. Ltd
+        </div>
+        <form [formGroup]="SignupData">
+          <div class="col-md-12 p-0 m-0 row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('Fullname').errors && 
+              (SignupData.get('Fullname').touched || SignupData.get('Fullname').dirty)}">
+                <label for="Fullname">Full name &emsp;<span>*</span></label>
+                <input type="text" class="form-control" id="Fullname" required formControlName="Fullname"
+                  placeholder="Enter full name. (Mandator)">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('UserName').errors && 
+                (SignupData.get('UserName').touched || SignupData.get('UserName').dirty)}">
+                <label for="UserName">Username &emsp;<span>*</span></label>
+                <input type="text" class="form-control" required id="UserName" formControlName="UserName"
+                  placeholder="Enter username. (Mandatory)">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('Password').errors && 
+              (SignupData.get('Password').touched || SignupData.get('Password').dirty)}">
+                <label for="Password">Password &emsp;<span>*</span></label>
+                <input type="password" class="form-control" required id="Password" formControlName="Password"
+                  placeholder="Enter password. (Mandatory)">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('ConfirmPassword').errors && 
+              (SignupData.get('ConfirmPassword').touched || SignupData.get('ConfirmPassword').dirty)}">
+                <label for="ConfirmPassword">Confirm Password &emsp;<span>*</span></label>
+                <input type="password" class="form-control" required id="ConfirmPassword"
+                  formControlName="ConfirmPassword" placeholder="Configrm password. (Mandatory)">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('ShopName').errors && 
+              (SignupData.get('ShopName').touched || SignupData.get('ShopName').dirty)}">
+                <label for="shopname">Shop Name &emsp;<span>*</span></label>
+                <input type="text" class="form-control" id="ShopName" formControlName="ShopName"
+                  placeholder="Enter shop fullname. (Mandatory)">
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group">
+                <label for="emailid">Email Id. &emsp;<span>*</span></label>
+                <input type="text" class="form-control" id="confirmPassword" formControlName="EmailId"
+                  placeholder="Enter your email id.">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('MobileNo').errors && 
+              (SignupData.get('MobileNo').touched || SignupData.get('MobileNo').dirty)}">
+                <label for="MobileNo">Mobile no#. &emsp;<span>*</span></label>
+                <input type="number" class="form-control" required id="MobileNo" formControlName="MobileNo"
+                  maxLength="10" pattern="[0-9]{10}" (keypress)="MobileNumber($event)"
+                  placeholder="Enter mobile no #. (Mandatory)">
+              </div>
+              <div class="form-group">
+                <label for="MobileNo">Shop Phone no#.</label>
+                <input type="text" class="form-control" id="ShopPhoneNo" formControlName="ShopPhoneNo"
+                  (keypress)="MobileNumber($event)" placeholder="Enter shop phone no #.">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('RegistrationCode').errors && 
+              (SignupData.get('RegistrationCode').touched || SignupData.get('RegistrationCode').dirty)}">
+                <label for="registrationCode">Registration Code &emsp;<span>*</span></label>
+                <input type="text" class="form-control" id="registrationCode" required
+                  formControlName="RegistrationCode" placeholder="Enter your registration code. (Mandatory)">
+              </div>
+              <div class="form-group" [ngClass]="{'has-error': SignupData.get('BillCode').errors && 
+              (SignupData.get('BillCode').touched || SignupData.get('BillCode').dirty)}">
+                <label for="billingcode">Billing Code &emsp;<span>*</span></label>
+                <input type="text" class="form-control" id="billingcode" required formControlName="BillCode"
+                  placeholder="Your billing code (Mandatory)">
+              </div>
+            </div>
+            <div class="col-12">
+              <button mat-raised-button color="warn" class="w-100 mb-2" (click)="SignupUser()">Sign
+                Up</button>
+              <button mat-raised-button (click)="EnableLogin()" class="btn-info w-100 mb-2">Back To Login</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-2 col-sm-12 float-right">
+      <div class="img">
+        <div class="img__text m--up">
+          <h2>New here?</h2>
+          <p>Sign up and discover great amount of new opportunities!</p>
+        </div>
+        <div class="container img__text m--up t-50">
+          <button (click)="EnableSignup()" class="btn btn-warning btn-block">Sign up</button>
+        </div>
+      </div>
+    </div>
+</div>

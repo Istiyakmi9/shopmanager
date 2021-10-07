@@ -1,0 +1,19 @@
+<div class="chat-box">
+  <div class="col-md-12 col-sm-12 m-0 p-0">
+    <div class="col-md-12 h-2 b-broder text-center pt-2">
+      Chat
+    </div>
+    <div id="chat-room" class="col-md-12  h-6 p-2 overflow-auto">
+    </div>
+    <div class="w-100 h-3 t-border p-2">
+      <form (ngSubmit)="SendMessage()">
+        <div class="w-25 d-inline-block text-left">
+          <button type="submit" class="btn btn-success snd-btn btn-r">Send</button>
+        </div>
+        <div class="w-75 d-inline-block">
+          <input class="form-control btn-r" id="msg" multiple="true" type="text">
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

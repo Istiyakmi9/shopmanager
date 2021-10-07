@@ -1,0 +1,133 @@
+.actionBar {
+  width: 100%;
+  padding: 16px 5px;
+  padding-top: 0px;
+}
+
+.actionBar a {
+  margin: 0 3px;
+}
+
+ul.bar_tabs {
+  overflow: visible;
+  background: #F5F7FA;
+  height: 25px;
+  margin: 10px 0 14px;
+  padding-left: 14px;
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  border-bottom: 1px solid #E6E9ED;
+}
+
+.tab-pane {
+  opacity: 0;
+}
+
+ul.bar_tabs>li.active {
+  border-right: 6px solid #D3D6DA;
+  border-top: 0;
+  margin-top: -15px;
+}
+
+ul.bar_tabs>li {
+  border: 1px solid #E6E9ED;
+  color: #333 !important;
+  margin-top: -17px;
+  margin-left: 8px;
+  background: #fff;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+li.active {
+  padding-bottom: 1px;
+  background-color: #2b3b4a;
+}
+
+// .nav-tabs>li {
+//   float: left;
+//   margin-bottom: -1px;
+// }
+
+// .nav>li {
+//   position: relative;
+//   display: block;
+// }
+
+ul.bar_tabs>li a.active {
+  border-bottom: none;
+  background-color: #fff !important;
+}
+
+li a[class=":active"] {
+  border-right: 6px solid #D3D6DA !important;
+}
+
+ul.bar_tabs>li {
+  border: 1px solid #E6E9ED;
+  color: #333 !important;
+  margin-top: -17px;
+  margin-left: 8px;
+  background: #fff;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+ul.bar_tabs>li a {
+  padding: 9px 17px;
+  background: #F5F7FA;
+  margin: 0;
+  border-top-right-radius: 0;
+}
+
+ul.bar_tabs>li a {
+  color: #5A738E;
+  text-decoration: none;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 0rem !important;
+}
+
+.profile_picture {
+  position: absolute;
+  right: 0px;
+  top: -70px;
+  border: 2px solid;
+  width: 110px;
+  height: 110px;
+}
+
+.profile_picture img {
+  float: left;
+  width: 106px;
+  padding: 2px;
+  margin-right: 15px;
+  overflow: hidden;
+  z-index: 1001;
+  height: 106px;
+}
+
+.upload-anc {
+  position: absolute;
+  margin-left: -130px;
+  margin-top: 82px;
+}
+
+.upload-anc:hover {
+  color: darkblue !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+
+.align-btn {
+  padding-top: 40px;
+}
+
+.panel {
+  border: 1px solid #d9d9d9;
+  margin: 6px 0px 10px 0px;
+  padding-top: 16px;
+}

@@ -1,0 +1,274 @@
+.table td {
+  padding: 0rem !important;
+}
+
+.table th {
+  padding: .5rem;
+  font-size: 12px !important;
+}
+
+.br-0 {
+  border-radius: 0px !important;
+}
+
+.item-desc.float-right span {
+  color: #c4baba;
+}
+
+.lbl-text {
+  padding: 0px 10px !important;
+  display: block;
+  height: 20px;
+  position: relative;
+}
+
+textarea:focus,
+input:focus {
+  outline: none !important;
+}
+
+.tbl-input {
+  position: relative;
+  width: 100%;
+  padding-left: 10px;
+}
+
+.footer-bg {
+  background-color: #f7f7f7
+}
+
+.footer-bg th {
+  height: 6rem;
+}
+
+.lbl-msg {
+  font-size: 12px;
+  font-weight: normal;
+  padding-left: 10px;
+}
+
+.final-lbl {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.table td {
+  font-size: 12px;
+  padding: 0px !important;
+  vertical-align: middle;
+  border-top: 0px !important;
+  position: relative;
+}
+
+.final-lbl small {
+  margin-right: 10px;
+  color: #c8b5b5;
+}
+
+.cust-dd {
+  margin-top: -25px !important;
+}
+
+.actionBar {
+  width: 100%;
+  padding: 16px 5px;
+  padding-top: 0px;
+}
+
+.actionBar a {
+  margin: 0 3px;
+}
+
+ul.bar_tabs {
+  overflow: visible;
+  background: #F5F7FA;
+  height: 25px;
+  margin: 10px 0 14px;
+  padding-left: 14px;
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  border-bottom: 1px solid #E6E9ED;
+  cursor: pointer;
+}
+
+ul.bar_tabs>li.active {
+  border-right: 6px solid #D3D6DA;
+  border-top: 0;
+  margin-top: -15px;
+}
+
+ul.bar_tabs>li {
+  border: 1px solid #E6E9ED;
+  color: #333 !important;
+  margin-top: -17px;
+  margin-left: 8px;
+  background: #fff;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+li.active {
+  padding-bottom: 1px;
+  background-color: #2b3b4a;
+}
+
+// .nav-tabs>li {
+//   float: left;
+//   margin-bottom: -1px;
+// }
+
+// .nav>li {
+//   position: relative;
+//   display: block;
+// }
+
+ul.bar_tabs>li a.active {
+  border-bottom: none;
+  background-color: #fff !important;
+}
+
+li a[class=":active"] {
+  border-right: 6px solid #D3D6DA !important;
+}
+
+ul.bar_tabs>li {
+  border: 1px solid #E6E9ED;
+  color: #333 !important;
+  margin-top: -17px;
+  margin-left: 8px;
+  background: #fff;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+ul.bar_tabs>li a {
+  padding: 9px 17px;
+  background: #F5F7FA;
+  margin: 0;
+  border-top-right-radius: 0;
+}
+
+ul.bar_tabs>li a {
+  color: #5A738E;
+  text-decoration: none;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 0rem !important;
+}
+
+.profile_picture {
+  position: absolute;
+  right: 0px;
+  top: -70px;
+  border: 2px solid;
+  width: 102px;
+}
+
+.profile_picture img {
+  float: left;
+  width: 100px;
+  padding: 2px;
+  margin-right: 15px;
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.upload-anc {
+  position: absolute;
+  margin-left: -130px;
+  margin-top: 82px;
+}
+
+.upload-anc:hover {
+  color: darkblue !important;
+  text-decoration: underline !important;
+  cursor: pointer;
+}
+
+.align-btn {
+  padding-top: 40px;
+}
+
+.panel {
+  border: 1px solid #d9d9d9;
+  margin: 6px 0px 10px 0px;
+  padding-top: 16px;
+}
+
+div#myTabContent {
+  border: 1px solid #d9d9d9;
+  padding-top: 12px;
+}
+
+.view-lbl {
+  z-index: 1;
+  text-align: right;
+  color: #91a7a7;
+  width: 25%;
+  font-size: 12px !important;
+  padding: 0px;
+  margin: 0px;
+  padding-right: 2px;
+}
+
+// :host ::ng-deep .mat-form-field-wrapper {
+//   padding: 0px !important;
+//   height: auto !important;
+// }
+
+// :host ::ng-deep .mat-form-field-infix {
+//   padding: 0px !important;
+//   border-top: none !important
+// }
+
+// :host ::ng-deep .mat-form-field-infix {
+//   border: 0px !important;
+// }
+
+:host ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: transparent !important;
+}
+
+:host ::ng-deep .mat-form-field-infix {
+  border-bottom: 1.2em solid transparent;
+}
+
+:host ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-underline {
+  background-color: rgba(0, 0, 0, .42) !important;
+}
+
+:host ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0px !important;
+}
+
+
+.t-20 {
+  top: 20px !important;
+}
+
+.disabled-field {
+  background-color: #fefbfb !important;
+}
+
+.sub-header-row th {
+  width: 5% !important;
+  text-align: center;
+}
+
+.sub-header-cell {
+  font-weight: normal;
+  color: #af9a9a;
+  font-size: 12px;
+  text-align: center;
+  padding: 2px 0px !important;
+}
+
+.marked-active {
+  border: 2px solid red;
+}
+
+.container-100>* {
+  width: 100%;
+}
