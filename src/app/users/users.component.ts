@@ -108,16 +108,16 @@ export class UsersComponent implements OnInit {
       }
 
       if (ErrorFields.length === 0) {
-        this.http.post("Registration/AppUser", FormData.value).then(data => {
-          if (data.indexOf("successfully") != -1) {
-            this.CleanUpForm();
-            this.commonService.ShowToast(data);
-          } else {
-            this.commonService.ShowToast(
-              "User adding fails. Please try again later."
-            );
-          }
-        });
+        // this.http.post("Registration/AppUser", FormData.value).then(data => {
+        //   if (data.indexOf("successfully") != -1) {
+        //     this.CleanUpForm();
+        //     this.commonService.ShowToast(data);
+        //   } else {
+        //     this.commonService.ShowToast(
+        //       "User adding fails. Please try again later."
+        //     );
+        //   }
+        // });
       } else {
         this.commonService.ShowToast(
           "Required fields: " + ErrorFields.join(", ")

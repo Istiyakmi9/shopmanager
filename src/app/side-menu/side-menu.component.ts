@@ -19,6 +19,7 @@ export class SideMenuComponent implements OnInit {
   IsActionBindingDone: boolean = false;
   CurrentUser: any = null;
   UserImage: string;
+  RoleName: string = "";
 
   constructor(
     private commonService: CommonService,
@@ -154,6 +155,10 @@ export class SideMenuComponent implements OnInit {
     if (RouteName !== null && RouteName !== "") {
       this.nav.navigate(RouteName, null);
     }
+  }
+
+  CleanUpCache() {
+    
   }
 }
 

@@ -1,6 +1,6 @@
 import { NumberOnlyDirective } from "./../directives/numbertype";
 import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -50,6 +50,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTabsModule} from '@angular/material/tabs';
+import { UpperCaseDirective } from "src/directives/upper";
+import { NgbDateParserFormatter, NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbDateFormatter } from "src/providers/NgbDateFormatter";
 
 @NgModule({
   declarations: [
@@ -82,7 +85,8 @@ import {MatTabsModule} from '@angular/material/tabs';
     PurchasecreditComponent,
     PurchaseitemsComponent,
     FloatOnlyDirective,
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    UpperCaseDirective    
   ],
   imports: [
     BrowserModule,
@@ -100,16 +104,21 @@ import {MatTabsModule} from '@angular/material/tabs';
     MatTabsModule,
     MatCheckboxModule,
     ReactiveFormsModule,
-    MatDialogModule
+    MatDialogModule,
+    NgbModule
   ],
   entryComponents: [PageModalComponent, AdvanceFilterModalComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     AjaxService,
     CommonService,
     ApplicationStorage,
     PageCache,
     MatDatepickerModule,
-    iNavigation
+    iNavigation,
+    {
+      provide: NgbDateParserFormatter, useClass: NgbDateFormatter
+    }
   ],
   bootstrap: [AppComponent]
 })

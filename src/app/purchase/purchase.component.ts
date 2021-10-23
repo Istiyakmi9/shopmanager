@@ -569,7 +569,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   ReLoadMasterData() {
-    this.http.get("Master/PageMasterData").then(
+    this.http.get("master/PageMasterData").then(
       response => {
         this.cache.clear();
         this.storage.clear();
@@ -616,33 +616,28 @@ export class PurchaseComponent implements OnInit {
           }
         } else {
           this.PageCachingData = this.cache.get("Catagory");
-          if (this.PageCachingData !== null) {
-            //this.PrepareDropdownData();
-            this.StockBindingData = {
-              data: [],
-              placeholder: ""
-            };
-            let BindingData = [];
-            let index = 0;
-            while (index < this.PageCachingData.length) {
-              BindingData.push({
-                value: this.PageCachingData[index].CatagoryName,
-                data: {
-                  catagoryUid: this.PageCachingData[index].CatagoryUid
-                }
-              });
-              index++;
-            }
-            this.StockBindingData["data"] = BindingData;
-            this.loadInitData();
-            this.IsDataReady = true;
-          } else {
-            this.IsDataReady = false;
-            this.commonService.ShowToast(
-              "No item added. Please go to setting and add product.",
-              10
-            );
+          if (this.PageCachingData == null) {
+            this.PageCachingData = [];
           }
+          //this.PrepareDropdownData();
+          this.StockBindingData = {
+            data: [],
+            placeholder: ""
+          };
+          let BindingData = [];
+          let index = 0;
+          while (index < this.PageCachingData.length) {
+            BindingData.push({
+              value: this.PageCachingData[index].CatagoryName,
+              data: {
+                catagoryUid: this.PageCachingData[index].CatagoryUid
+              }
+            });
+            index++;
+          }
+          this.StockBindingData["data"] = BindingData;
+          this.loadInitData();
+          this.IsDataReady = true;
         }
       },
       error => {

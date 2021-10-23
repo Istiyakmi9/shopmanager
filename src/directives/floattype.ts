@@ -3,7 +3,7 @@ import { Directive, ElementRef, Input, HostListener } from "@angular/core";
 @Directive({ selector: "input[FloatType]" })
 export class FloatOnlyDirective {
   @Input() FloatType: boolean;
-  AllowedKeys: Array<number> = [8, 46, 37, 39];
+  AllowedKeys: Array<number> = [8, 9, 46, 37, 39];
   constructor(private elemRef: ElementRef) {}
 
   @HostListener("keydown", ["$event"]) onKeyDown(event) {

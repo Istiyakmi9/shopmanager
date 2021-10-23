@@ -1,12 +1,13 @@
 import { iNavigation } from "src/providers/iNavigation";
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import * as $ from "jquery";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
 import { CommonService } from "../../providers/common-service/common.service";
 import { AjaxService } from "src/providers/ajax.service";
 import { PageCache } from "src/providers/PageCache";
 import { ItemReport } from "src/providers/constants";
+import { NgbCalendar, NgbDateStruct, NgbInputDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: "app-catagory",
@@ -14,26 +15,23 @@ import { ItemReport } from "src/providers/constants";
   styleUrls: ["./catagory.component.scss"]
 })
 export class CatagoryComponent implements OnInit {
-  @ViewChild("form") CatagoryData: NgForm;
   private IsEditPage: boolean = false;
   private PageObject: any = null;
-  ExistingCatagory: any = null;
-  ExistingVendor: any = null;
-  ExistingBrand: any = null;
-  EditCurrentItem: any = null;
-  AutoFillDropdownData: any = {
-    data: [],
-    placeholder: "Brand Name"
-  };
-  AutoFillCatagory: any = {
-    data: [],
-    placeholder: "Catagory"
-  };
 
-  AutoFillVendor: any = {
-    data: [],
-    placeholder: "Vendor"
-  };
+  ExpireOn: NgbDateStruct;
+
+  DefaultCatagory: any = null;
+  DefaultVendor: any = null;
+  DefaultBrand: any = null;
+
+  EditCurrentItem: any = null;
+
+  BrandData: any = {};
+  AutoFillCatagory: any = {};
+  AutoFillVendor: any = {};
+  catagoryForm: FormGroup = null;
+  IsSelectMode: boolean = false;
+
   IsBlurEnabled: any = "";
   Item: any = {
     ItemName: "",
@@ -43,7 +41,8 @@ export class CatagoryComponent implements OnInit {
     ActualPrice: "",
     SellingPrice: "",
     StockUid: "",
-    VendorUid: ""
+    VendorUid: "",
+    BrandName: ""
   };
   ItemCount: any;
   constructor(
@@ -51,10 +50,31 @@ export class CatagoryComponent implements OnInit {
     private commonService: CommonService,
     private http: AjaxService,
     private cache: PageCache,
-    private nav: iNavigation
-  ) {}
+    private nav: iNavigation,
+    private fb: FormBuilder,
+    private calendar: NgbCalendar,
+    private config: NgbInputDatepickerConfig
+  ) {
+    this.ExpireOn =  { 'year': 2021, 'month': 10, 'day': 11 };
+    this.catagoryForm = this.fb.group({
+      CatagoryUid: new FormControl(0, Validators.required),
+      BrandUid: new FormControl(0),
+      HSNNO: new FormControl(""),
+      ItemName: new FormControl("", Validators.required),
+      BrandName: new FormControl(""),
+      SerialNumber: new FormControl(""),
+      Quantity: new FormControl(""),
+      MRP: new FormControl(""),
+      ActualPrice: new FormControl(""),
+      SellingPrice: new FormControl(""),
+      StockUid: new FormControl(""),
+      VendorUid: new FormControl(0),
+      ExpireOn: new FormControl("")
+    });
+  }
 
   ngOnInit() {
+    
     let Data = this.commonService.GetCurrentPageStorageValue();
     if (Data !== null) {
       this.PageObject = Data;
@@ -67,108 +87,66 @@ export class CatagoryComponent implements OnInit {
     }
     this.IsBlurEnabled = "true";
     this.InitPageData();
+    document.getElementById("ItemName").focus();
   }
 
   InitPageData() {
-    let CatagoryDetail = this.storage.get("master", "Catagory");
-    let VendorDetail = this.storage.get("master", "Vendor");
-    if (this.commonService.IsValid(CatagoryDetail)) {
-      CatagoryDetail = this.GetCatagory(CatagoryDetail);
-      this.AutoFillCatagory["data"] = CatagoryDetail;
-      this.AutoFillCatagory["placeholder"] = "Catagory";
-
-      CatagoryDetail = this.GetVendor(VendorDetail);
-      this.AutoFillVendor["data"] = CatagoryDetail;
-      this.AutoFillVendor["placeholder"] = "Vendor";
-    } else {
-      this.commonService.ShowToast("No stocks available. Please add new.");
-    }
-
-    if (this.IsEditPage) {
-      let StockUid = this.PageObject.HiddenFields[0].value;
-      this.http
-        .get("ItemAndGoods/GetStockDetailByUid?StockUid=" + StockUid)
-        .then(
-          data => {
-            if (this.commonService.IsValid(data)) {
-              this.EditCurrentItem = data["Record"];
-              if (
-                this.EditCurrentItem !== null &&
-                this.EditCurrentItem.length > 0
-              ) {
-                this.EditCurrentItem = this.EditCurrentItem[0];
-                this.ExistingCatagory = this.AutoFillCatagory["data"].filter(
-                  x => x.data === this.EditCurrentItem.CatagoryUid
-                );
-                if (this.ExistingCatagory.length > 0) {
-                  this.ExistingCatagory = this.ExistingCatagory[0];
-                }
-
-                this.ExistingVendor = this.AutoFillVendor["data"].filter(
-                  x => x.data === this.EditCurrentItem.VendorUid
-                );
-                if (this.ExistingVendor.length > 0) {
-                  this.ExistingVendor = this.ExistingVendor[0];
-                }
-
-                this.VerifyCatagory(JSON.stringify(this.ExistingCatagory));
-
-                this.Item = {
-                  ItemName: this.EditCurrentItem.ItemName,
-                  SerialNumber: this.EditCurrentItem.SerialNumber,
-                  Quantity: this.EditCurrentItem.AvailableQuantity,
-                  MRP: this.EditCurrentItem.MRP,
-                  ActualPrice: this.EditCurrentItem.ActualPrice,
-                  SellingPrice: this.EditCurrentItem.SellingPrice,
-                  StockUid: this.EditCurrentItem.StockUid,
-                  VendorUid: this.EditCurrentItem.VendorUid
-                };
-              }
-            }
-          },
-          error => {}
-        );
-    }
-  }
-
-  VerifyCatagory(e: any) {
-    let CatagoryData = JSON.parse(e);
-    if (
-      this.commonService.IsValid(CatagoryData) ||
-      !this.commonService.IsValidString(CatagoryData.data)
-    ) {
-      if (CatagoryData["data"] === "") {
-        this.commonService.ShowToast(
-          "Please add catagory first. Go to setting page.",
-          10
-        );
-        this.ClearAllFields();
-      } else {
-        let CatagoryUid = CatagoryData["data"];
-        let BrandDetail = this.storage.get("master", "Brands");
-        this.OnBlurFieldValidation();
-        let FilteredBrands = BrandDetail.filter(
-          x => x.CatagoryUid === CatagoryUid
-        );
-        if (FilteredBrands.length > 0) {
-          FilteredBrands = this.GetBrands(FilteredBrands);
-          this.AutoFillDropdownData["data"] = FilteredBrands;
-          this.AutoFillDropdownData["placeholder"] = "Brand Name";
-          if (this.IsEditPage) {
-            this.ExistingBrand = this.AutoFillDropdownData["data"].filter(
-              x => x.data === this.EditCurrentItem.BrandUid
-            );
-            if (this.ExistingBrand.length > 0) {
-              this.ExistingBrand = this.ExistingBrand[0];
-            }
-          }
-        } else {
-          this.AutoFillDropdownData["data"] = [];
-          this.commonService.ShowToast("No stocks available. Please add new.");
-        }
+    let Brands = this.storage.get(null, "brands");
+    let catagory = this.storage.get(null, "catagory");
+    if(catagory) {
+      let index = 0;
+      this.AutoFillCatagory = [{ text: 'Catagory', value: 0 }];
+      while(index < catagory.length) {
+        this.AutoFillCatagory.push({
+          text: catagory[index].CatagoryName,
+          value: catagory[index].CatagoryUid
+        });
+        index++;
       }
     }
+
+    this.BrandData = [{
+      value: 0,
+      text: 'Select Brand'
+    }];
+    
+    this.AutoFillVendor = [{
+      value: 0,
+      text: 'Select Vendor'
+    }];
+
+    this.DefaultCatagory = 0;
+    this.DefaultVendor = 0;
+    this.DefaultBrand = 0;
   }
+
+  // VerifyCatagory(e: any) {
+  //   let CatagoryData = JSON.parse(e);
+  //   if (
+  //     this.commonService.IsValid(CatagoryData) ||
+  //     !this.commonService.IsValidString(CatagoryData.data)
+  //   ) {
+  //     if (CatagoryData["data"] === "") {
+  //       this.commonService.ShowToast(
+  //         "Please add catagory first. Go to setting page.",
+  //         10
+  //       );
+  //       this.ClearAllFields();
+  //     } else {
+  //       let CatagoryUid = CatagoryData["data"];
+  //       let BrandDetail = this.storage.get("master", "Brands");
+  //       this.OnBlurFieldValidation();
+  //       let FilteredBrands = BrandDetail.filter(
+  //         x => x.CatagoryUid === CatagoryUid
+  //       );
+  //       if (FilteredBrands.length > 0) {
+  //         FilteredBrands = this.GetBrands(FilteredBrands);          
+  //       } else {
+  //         this.commonService.ShowToast("No stocks available. Please add new.");
+  //       }
+  //     }
+  //   }
+  // }
 
   OnBlurFieldValidation() {
     $("#catagory-form")
@@ -257,106 +235,27 @@ export class CatagoryComponent implements OnInit {
       .val("");
   }
 
-  ValidateStocksForm(StockData) {
-    let flag = true;
-    let Errors = [];
-    if (this.commonService.IsValid(StockData)) {
-      if (!this.commonService.IsValidString(StockData["VendorUid"])) {
-        flag = false;
-        $("#Vendor")
-          .find('input[name="iautofill-textfield"]')
-          .css({
-            border: "1px solid red !important",
-            "border-right": "4px solid red  !important"
-          });
-      } else {
-        $("#Vendor")
-          .find('input[name="iautofill-textfield"]')
-          .removeAttr("style");
-      }
-
-      if (!this.commonService.IsValidString(StockData["Brand"])) {
-        flag = false;
-        $("#Brand")
-          .find('input[name="iautofill-textfield"]')
-          .css({
-            border: "1px solid red !important",
-            "border-right": "4px solid red  !important"
-          });
-      } else {
-        $("#Brand")
-          .find('input[name="iautofill-textfield"]')
-          .removeAttr("style");
-      }
-
-      if (!this.commonService.IsValidString(StockData["CatagoryUid"])) {
-        flag = false;
-        $("#Catagory")
-          .find('input[name="iautofill-textfield"]')
-          .css({
-            border: "1px solid red !important",
-            "border-right": "4px solid red  !important"
-          });
-      } else {
-        $("#Catagory")
-          .find('input[name="iautofill-textfield"]')
-          .removeAttr("style");
-      }
-
-      if (!this.commonService.IsValidString(StockData["ItemName"])) {
-        flag = false;
-        $("#ItemName").removeClass("success-field");
-      } else {
-        $("#ItemName").addClass("success-field");
-      }
-
-      if (!this.commonService.IsValidString(StockData["Quantity"])) {
-        flag = false;
-        $("#Quantity").removeClass("success-field");
-      } else {
-        $("#Quantity").addClass("success-field");
-      }
-
-      if (!this.commonService.IsValidString(StockData["MRP"])) {
-        flag = false;
-        $("#MRP").removeClass("success-field");
-      } else {
-        $("#MRP").addClass("success-field");
-      }
-    }
-  }
-
   AddCatagory() {
-    let StockData = this.CatagoryData.value;
-    if (this.commonService.IsValid(StockData)) {
-      let VendorInfo = this.commonService.ReadAutoCompleteObject($("#Vendor"));
-      if (VendorInfo.value !== "") {
-        StockData["VendorUid"] = VendorInfo["data"];
+    let StockData = this.catagoryForm.value;
+    if (this.catagoryForm.valid) {
+      let errorCount = 0;
+      if(this.catagoryForm.controls.CatagoryUid.errors != null){
+        errorCount++;
       }
 
-      let Brand = this.commonService.ReadAutoCompleteObject($("#Brand"));
-      if (Brand.value !== "") {
-        StockData["BrandUid"] = Brand["data"];
-        StockData["Brand"] = Brand["value"];
+      if(this.catagoryForm.controls.ItemName.errors != null){
+        errorCount++;
+      } else {
+        let data = this.catagoryForm.get("ItemName").value;
+        this.catagoryForm.get("ItemName").setValue(data.toUpperCase());
       }
 
-      let Catagory = this.commonService.ReadAutoCompleteObject($("#Catagory"));
-      if (Catagory.value !== "") {
-        StockData["CatagoryUid"] = Catagory["data"];
-        StockData["Catagory"] = Catagory["value"];
-      }
-
-      StockData["StockUid"] = $("#StockUid")
-        .val()
-        .trim();
-
-      let Keys = Object.keys(StockData);
-      let IsValidForm = this.commonService.ValidateForm(Keys);
-      this.ValidateStocksForm(StockData);
-      if (IsValidForm == 0) {
-        this.http.post("ItemAndGoods/AddEditStockItem", StockData).then(
+      let ExipredDate = new Date(`${this.ExpireOn.month}/${this.ExpireOn.day}/${this.ExpireOn.year}`);
+      this.catagoryForm.get("ExpireOn").setValue(ExipredDate);
+      if (errorCount == 0) {
+        this.http.post("itemandgoods/AddEditStockItem", StockData).then(
           data => {
-            if (this.commonService.IsValid(data)) {
+            if (data.responseBody) {
               this.ClearAllFields();
               let Tables = Object.keys(data);
               if (

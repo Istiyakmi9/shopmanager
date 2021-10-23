@@ -2,7 +2,7 @@ import { Directive, ElementRef, Input, HostListener } from "@angular/core";
 
 @Directive({ selector: "input[NumberType]" })
 export class NumberOnlyDirective {
-  AllowedKeys: Array<number> = [8, 46, 37, 39];
+  AllowedKeys: Array<number> = [8, 9, 46, 37, 39];
   @Input() NumberType: boolean;
   constructor(private elemRef: ElementRef) {}
 

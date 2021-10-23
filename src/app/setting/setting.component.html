@@ -29,35 +29,39 @@
         <p>Change or add your business common information.</p>
         <input type="hidden" id="steps-reminder" value="step-1" />
         <div id="wizard" class="form_wizard wizard_horizontal">
-          <form method="post" (keydown.enter)="$event.preventDefault()" #form="ngForm" id="settingform">
+          <form (keydown.enter)="$event.preventDefault()" [formGroup]="CatagoryForm">
             <div id="step-1" name="form-steps">
               <div class="form-horizontal form-label-left">
-                <div class="form-group">
-                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+
+                <div class="mt4 mb-4">
+                  <input type="checkbox" (change)="changeCatagoryFieldType()"> Check to select from existing.
+                </div>
+                
+                <div *ngIf="selectMode" class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
                     Select Catagory
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <app-iautocomplete id="Catagory" name="Catagory" [Data]="CatagoryDetail"
-                      (OnSelect)="HandleSelectedCatagory($event)"></app-iautocomplete>
+                    <app-iautocomplete id="Catagory" [Data]="CatagoryDetail" [Placeholder]="placehosderName" formControlName="CatagoryUid">
+                    </app-iautocomplete>
                   </div>
                 </div>
-                <div class="form-group" *ngIf="enableNewnameField">
-                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
-                    <mat-checkbox (change)="EnableNewName()" value="eanblesearch" class="position-relative chk-search">
-                      Modyfy name
-                    </mat-checkbox>
+
+                <div *ngIf="!selectMode" class="form-group">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
+                    Enter Catagory
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <input id="newname" name="newname" ngModel required placeholder="Enter new name for given Catagory"
-                      class="form-control" [disabled]="NewName">
+                    <input name="Catagory" class="form-control" formControlName="CatagoryName" placeholder="Enter Catagory type name">
                   </div>
                 </div>
+
                 <div class="form-group">
-                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12" for="first-name">
+                  <label class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
                     Catagory Description
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <textarea rows="4" id="desc" name="desc" ngModel required [(ngModel)]="SettingDetail.desc"
+                    <textarea rows="4" id="desc" name="desc" formControlName="Description"
                       placeholder="Catagory Description" class="form-control" [disabled]="FieldDisabled">
                     </textarea>
                   </div>
@@ -67,8 +71,7 @@
                     IGST (calculated in %)
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <input id="igst" name="igst" [(ngModel)]="SettingDetail.igst.value" ngModel required
-                      [attr.Uid]="SettingDetail.igst.uid" FloatType="true" placeholder="SGST value in (%)"
+                    <input name="IGST" FloatType="true" placeholder="IGST value in (%)" formControlName="IGST"
                       class="form-control" [disabled]="FieldDisabled">
                   </div>
                 </div>
@@ -76,8 +79,7 @@
                   <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
                     SGST (calculated in %)</label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <input id="sgst" [(ngModel)]="SettingDetail.sgst.value" class="form-control" required ngModel
-                      [attr.Uid]="SettingDetail.sgst.uid" name="sgst" FloatType="true" placeholder="SGST value in (%)"
+                    <input name="SGST" class="form-control" FloatType="true" formControlName="SGST" placeholder="SGST value in (%)"
                       [disabled]="FieldDisabled">
                   </div>
                 </div>
@@ -86,8 +88,7 @@
                     CGST (calculated in %)
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <input type="text" id="cgst" name="cgst" required [(ngModel)]="SettingDetail.cgst.value" ngModel
-                      [attr.Uid]="SettingDetail.cgst.uid" FloatType="true" placeholder="CGST value in (%)"
+                    <input name="cgst" FloatType="true" placeholder="CGST value in (%)" formControlName="CGST"
                       class="form-control" [disabled]="FieldDisabled">
                   </div>
                 </div>

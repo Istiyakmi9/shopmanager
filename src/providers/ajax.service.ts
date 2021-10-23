@@ -100,8 +100,8 @@ export class AjaxService {
         .subscribe(
           (res: any) => {
             if (res.body !== null && res.body !== "") {
-              let Data = JSON.parse(res.body);
               this.commonService.HideLoaderByAjax();
+              let Data = res.body;
               resolve(Data);
             } else {
               this.commonService.HideLoaderByAjax();
@@ -151,7 +151,7 @@ export class AjaxService {
               try {
                 if (res.body !== null && res.body !== "") {
                   this.commonService.HideLoaderByAjax();
-                  Data = JSON.parse(res.body);
+                  Data = res.body;
                 } else {
                   this.commonService.HideLoaderByAjax();
                   this.commonService.ShowToast(

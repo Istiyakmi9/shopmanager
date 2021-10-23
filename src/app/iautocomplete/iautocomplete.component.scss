@@ -356,8 +356,7 @@ a:hover {
   background-color: #fff;
   width: 100%;
   border: 1px solid #d9d9d9;
-  // height: 236px;
-  min-height: 75px;
+  min-height: 97px;
   max-height: 238px;
   z-index: 1000;
   border-radius: 4px;
@@ -469,18 +468,21 @@ input:focus {
 .anc-remove {
   position: absolute;
   right: 0px !important;
-  top: -2px !important;
-  bottom: -3px !important;
+  top: 0px !important;
+  bottom: 0px !important;
   margin: auto;
   cursor: pointer;
   font-size: 10px;
   font-weight: bold;
   width: 14px;
   text-align: center;
-  line-height: 24px;
+  transform: translate(-5px, 10px);
 }
 
 .anc-remove:hover {
-  background-color: rgba(241, 241, 24, 0.5803921568627451);
   font-size: 12px !important;
+}
+
+.autocomplete-suggestions div:first-child {
+  margin-top: 30px !important;
 }
