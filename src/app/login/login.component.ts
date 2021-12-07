@@ -157,10 +157,7 @@ export class LoginComponent implements OnInit {
 
   AuthenticateCredential(Credential: any) {
     if (this.commonService.IsValid(Credential)) {
-      if (
-        this.commonService.IsValid(Credential.Username) &&
-        this.commonService.IsValid(Credential.Password)
-      ) {
+      if (Credential.Username && Credential.Password) {
         this.http.post("login/auth", Credential).then(response => {
             if(response.responseBody) {
               this.local.set(response.responseBody);

@@ -12,7 +12,6 @@ import { VendorReport } from "./../../providers/constants";
   styleUrls: ["./vendorreport.component.scss"]
 })
 export class VendorreportComponent implements OnInit {
-  DynamicTableDetail: ITable;
   Record: any = [];
   TotalCount: any = 0;
   Pagination: [];
@@ -35,13 +34,6 @@ export class VendorreportComponent implements OnInit {
       $("#hdnpageSize").val(pageSize);
       $("#hdnpageIndex").val(pageIndex);
       pageIndex = pageIndex - 1;
-      this.DynamicTableDetail = {
-        rows: VendorColumn,
-        url: "Registration/VendorReport",
-        SearchStr: searchStr,
-        SortBy: sortBy,
-        editUrl: "customer"
-      };
     });
   }
 }

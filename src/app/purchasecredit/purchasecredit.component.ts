@@ -26,7 +26,6 @@ export class PurchasecreditComponent implements OnInit {
   // SearchString: string;
   // SortBy: string;
   // Url: string;
-  DynamicTableDetail: ITable;
   //CurrentEditRow: any;
   constructor(
     private local: ApplicationStorage,
@@ -40,12 +39,7 @@ export class PurchasecreditComponent implements OnInit {
   }
 
   BindDynamicTableDetail() {
-    this.DynamicTableDetail = {
-      rows: PurchaseCreditColumn,
-      url: "GetPurchaseItemsByFilter",
-      SearchStr: "1=1",
-      SortBy: "PurchaseItemUid"
-    };
+
   }
 
   FilterPageData(data: any) {}

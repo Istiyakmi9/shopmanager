@@ -1,0 +1,105 @@
+.a-icon:hover {
+  font-size: 15px;
+}
+
+.dyn-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dyn-body-item > div:last-child {
+  width: calc(100% - 45px);
+}
+
+.dyn-body::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
+
+.dyn-body::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.odd {
+  background-color: #f9f9f9 !important;
+}
+
+//---------------------------- New default looking table ----------------------------------
+
+.table {
+  color: #6d7680 !important;
+
+  td {
+    padding: 0px !important;
+  }
+
+  span:not(.plain),
+  input {
+    padding: 0px 0px 0px 8px !important;
+    display: block;
+    width: 100% !important;
+  }
+
+  th {
+    padding: 6px 0px 6px 8px !important;
+  }
+
+  td,
+  th {
+    border: 1px solid #d9d9d9;
+  }
+}
+
+.w-10 {
+  width: 10% !important;
+}
+
+.empty-row {
+  text-align: center;
+  margin: 60px 0px;
+  font-size: 20px;
+  color: #cacaca;
+}
+
+.empty-row {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  font-size: 16px;
+  font-style: italic;
+}
+
+.pagearrow {
+  border-radius: 50%;
+  width: 30px;
+  font-size: 30px;
+  display: inline-block;
+  color: #444;
+  transform: translate(0px, 2px);
+  text-align: center;
+}
+
+.pagearrow a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+.pagearrow:hover {
+  cursor: pointer !important;
+  font-size: 34px;
+  color: #444;
+}
+
+a.pagearrow.disable-btn {
+  pointer-events: none;
+  cursor: none;
+  color: #d2c3c3;
+}
+
+.inline-content {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  width: 100px !important;
+}

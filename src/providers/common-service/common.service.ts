@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import * as $ from "jquery";
 import { FormGroup } from "@angular/forms";
-import { Credit, PurchaseCredit } from "./../constants";
+import { Columns, Credit, PurchaseCredit, Rows, Total, ZerothIndex } from "./../constants";
 import { MappedActionPage } from "./../MappedActionPage";
 
 export const NAVPARAMNAME = "navigation_parameter";
@@ -575,4 +575,42 @@ export function IsValidType(Value): boolean {
     }
   }
   return Flag;
+}
+
+
+export function GetReportData(data: any, searchQuery: SearchRequest): any {
+  let GridData: any = null;
+  try{
+    let Keys = Object.keys(data);
+    if (Keys.indexOf(Total) !== -1 && Keys.indexOf(Rows) !== -1 && Keys.indexOf(Columns) !== -1){
+      let TotalCount = data[Total][ZerothIndex][Total];
+      GridData = {
+        headers: data[Columns],
+        rows: data[Rows],
+        totalCount: TotalCount,
+        pageIndex: searchQuery.PageIndex,
+        pageSize: searchQuery.PageSize,
+        url: "",
+      };
+    }
+  } catch(e) {
+    console.log('Error on trying to parse server returned data.');
+  }
+  return GridData;
+}
+
+export class SearchRequest {
+  SearchString: string = "";
+  SortBy: string = "";
+  PageIndex: number = 1;
+  PageSize: number = 10;
+}
+
+export function Toast(Message: string, TimeSpan: number = 5) {
+  let $Toast = document.getElementById("toast");
+  $Toast.innerHTML = Message;
+  $Toast.classList.remove("d-none");
+  setTimeout(() => {
+    $Toast.classList.add("d-none");
+  }, TimeSpan * 998);
 }

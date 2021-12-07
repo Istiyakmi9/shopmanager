@@ -247,7 +247,7 @@ body {
 
 .x_title h2 {
   margin: 5px 0 6px;
-  float: left;
+  //float: left;
   display: block;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -549,7 +549,7 @@ h2 {
 .disabledField {
   pointer-events: none;
   cursor: not-allowed;
-  background-color: #ece7e7 !important;
+  background-color: #fef8f8 !important;
 }
 
 .disabledField:hover {
@@ -563,4 +563,39 @@ h2 {
 
 .form-group{
   margin-bottom: 1rem;
+}
+
+.w-2 {
+  width: 2% !important;
+}
+
+.w-10 {
+  width: 10% !important;
+}
+
+.w-15 {
+  width: 15% !important;
+}
+
+.w-20 {
+  width: 20% !important;
+}
+
+.custom-toast {
+  padding: 10px;
+  bottom: 32px;
+  z-index: 99999;
+  width: 54rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
+  left: 0px;
+  margin: 0 auto;
+  right: 0px;
+  border-radius: 4px;
+}
+
+.custom-toast:hover {
+  opacity: 0.8;
+  cursor: pointer;
 }

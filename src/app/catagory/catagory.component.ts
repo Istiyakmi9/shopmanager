@@ -1,11 +1,10 @@
 import { iNavigation } from "src/providers/iNavigation";
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import * as $ from "jquery";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, SearchRequest } from "../../providers/common-service/common.service";
 import { AjaxService } from "src/providers/ajax.service";
-import { PageCache } from "src/providers/PageCache";
 import { ItemReport } from "src/providers/constants";
 import { NgbCalendar, NgbDateStruct, NgbInputDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 
@@ -20,15 +19,11 @@ export class CatagoryComponent implements OnInit {
 
   ExpireOn: NgbDateStruct;
 
-  DefaultCatagory: any = null;
-  DefaultVendor: any = null;
-  DefaultBrand: any = null;
-
   EditCurrentItem: any = null;
 
-  BrandData: any = {};
-  AutoFillCatagory: any = {};
-  AutoFillVendor: any = {};
+  BrandData: Array<any> = [];
+  AutoFillCatagory: Array<any> = [];
+  AutoFillVendor: Array<any> = [];
   catagoryForm: FormGroup = null;
   IsSelectMode: boolean = false;
 
@@ -49,7 +44,6 @@ export class CatagoryComponent implements OnInit {
     private storage: ApplicationStorage,
     private commonService: CommonService,
     private http: AjaxService,
-    private cache: PageCache,
     private nav: iNavigation,
     private fb: FormBuilder,
     private calendar: NgbCalendar,
@@ -69,29 +63,75 @@ export class CatagoryComponent implements OnInit {
       SellingPrice: new FormControl(""),
       StockUid: new FormControl(""),
       VendorUid: new FormControl(0),
-      ExpireOn: new FormControl("")
+      ExpiryDate: new FormControl("")
     });
   }
 
   ngOnInit() {
-    
-    let Data = this.commonService.GetCurrentPageStorageValue();
-    if (Data !== null) {
-      this.PageObject = Data;
-      if (typeof this.PageObject["HiddenFields"] !== "undefined") {
-        let StockUid = this.PageObject.HiddenFields[0].value;
-        if (StockUid !== null && StockUid !== "") {
-          this.IsEditPage = true;
+    this.InitPageData();
+    let prevPageData = this.nav.getValue();
+    if(prevPageData) {
+      let pageData = JSON.parse(prevPageData.data);
+      let form: SearchRequest = new SearchRequest();
+      form.SearchString = ` 1=1 AND StockUid = ${pageData.StockUid}`;
+      this.http.post("itemandgoods/GetProductByFilter", form).then(res => {
+        if(res.responseBody) {
+          pageData = res.responseBody[0];
+          this.catagoryForm.get("CatagoryUid").setValue(pageData.CatagoryUid);
+          this.catagoryForm.get("BrandUid").setValue(pageData.BrandUid);
+          this.catagoryForm.get("HSNNO").setValue(pageData.HSNNO);
+          this.catagoryForm.get("ItemName").setValue(pageData.ItemName);
+          this.catagoryForm.get("BrandName").setValue(pageData.BrandName);
+          this.catagoryForm.get("SerialNumber").setValue(pageData.SerialNumber);
+          this.catagoryForm.get("Quantity").setValue(pageData.Quantity);
+          this.catagoryForm.get("MRP").setValue(pageData.MRP);
+          this.catagoryForm.get("ActualPrice").setValue(pageData.ActualPrice);
+          this.catagoryForm.get("SellingPrice").setValue(pageData.SellingPrice);
+          this.catagoryForm.get("StockUid").setValue(pageData.StockUid);
+          this.catagoryForm.get("VendorUid").setValue(pageData.VendorUid);
+          this.catagoryForm.get("ExpiryDate").setValue(pageData.ExipredDate);
+        }
+      });
+    } else {
+      let Data = this.commonService.GetCurrentPageStorageValue();
+      if (Data !== null) {
+        this.PageObject = Data;
+        if (typeof this.PageObject["HiddenFields"] !== "undefined") {
+          let StockUid = this.PageObject.HiddenFields[0].value;
+          if (StockUid !== null && StockUid !== "") {
+            this.IsEditPage = true;
+          }
         }
       }
+      this.IsBlurEnabled = "true";
     }
-    this.IsBlurEnabled = "true";
-    this.InitPageData();
     document.getElementById("ItemName").focus();
   }
 
   InitPageData() {
+    this.BrandData = [{
+      value: 0,
+      text: 'Select Brand'
+    }];
+    
+    this.AutoFillVendor = [{
+      value: 0,
+      text: 'Select Vendor'
+    }];
+
     let Brands = this.storage.get(null, "brands");
+    if(Brands) {
+      this.IsSelectMode = true;
+      let index = 0;
+      while(index < Brands.length) {
+        this.BrandData.push({
+          text: Brands[index].BrandName,
+          value: Brands[index].BrandUid
+        });
+        index++;
+      }
+    }
+
     let catagory = this.storage.get(null, "catagory");
     if(catagory) {
       let index = 0;
@@ -104,49 +144,7 @@ export class CatagoryComponent implements OnInit {
         index++;
       }
     }
-
-    this.BrandData = [{
-      value: 0,
-      text: 'Select Brand'
-    }];
-    
-    this.AutoFillVendor = [{
-      value: 0,
-      text: 'Select Vendor'
-    }];
-
-    this.DefaultCatagory = 0;
-    this.DefaultVendor = 0;
-    this.DefaultBrand = 0;
   }
-
-  // VerifyCatagory(e: any) {
-  //   let CatagoryData = JSON.parse(e);
-  //   if (
-  //     this.commonService.IsValid(CatagoryData) ||
-  //     !this.commonService.IsValidString(CatagoryData.data)
-  //   ) {
-  //     if (CatagoryData["data"] === "") {
-  //       this.commonService.ShowToast(
-  //         "Please add catagory first. Go to setting page.",
-  //         10
-  //       );
-  //       this.ClearAllFields();
-  //     } else {
-  //       let CatagoryUid = CatagoryData["data"];
-  //       let BrandDetail = this.storage.get("master", "Brands");
-  //       this.OnBlurFieldValidation();
-  //       let FilteredBrands = BrandDetail.filter(
-  //         x => x.CatagoryUid === CatagoryUid
-  //       );
-  //       if (FilteredBrands.length > 0) {
-  //         FilteredBrands = this.GetBrands(FilteredBrands);          
-  //       } else {
-  //         this.commonService.ShowToast("No stocks available. Please add new.");
-  //       }
-  //     }
-  //   }
-  // }
 
   OnBlurFieldValidation() {
     $("#catagory-form")
@@ -251,27 +249,17 @@ export class CatagoryComponent implements OnInit {
       }
 
       let ExipredDate = new Date(`${this.ExpireOn.month}/${this.ExpireOn.day}/${this.ExpireOn.year}`);
-      this.catagoryForm.get("ExpireOn").setValue(ExipredDate);
+      this.catagoryForm.get("ExpiryDate").setValue(ExipredDate);
       if (errorCount == 0) {
         this.http.post("itemandgoods/AddEditStockItem", StockData).then(
           data => {
             if (data.responseBody) {
-              this.ClearAllFields();
               let Tables = Object.keys(data);
-              if (
-                Tables.indexOf("Catagory") !== -1 &&
-                Tables.indexOf("Brands") !== -1 &&
-                Tables.indexOf("Stocks") !== -1
-              ) {
-                this.storage.setByKey("Catagory", data["Catagory"]);
+              if (Tables.indexOf("Brands") !== -1 && Tables.indexOf("Stocks") !== -1) {
                 this.storage.setByKey("Brands", data["Brands"]);
-                this.storage.setByKey("Stocks", data["Stocks"]);
                 this.commonService.ShowToast("Record inserted successfully");
-                this.nav.navigate(ItemReport, null);
               } else {
-                this.commonService.ShowToast(
-                  "Data got inserted successfully but getting some problem. To resolve this please login again."
-                );
+                this.commonService.ShowToast(data.responseBody);
               }
             } else {
               this.commonService.ShowToast(

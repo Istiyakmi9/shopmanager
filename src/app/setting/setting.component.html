@@ -52,7 +52,7 @@
                     Enter Catagory
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
-                    <input name="Catagory" class="form-control" formControlName="CatagoryName" placeholder="Enter Catagory type name">
+                    <input name="Catagory" class="form-control text-uppercase" formControlName="CatagoryName" placeholder="Enter Catagory type name">
                   </div>
                 </div>
 
@@ -62,7 +62,7 @@
                   </label>
                   <div class="col-md-6 col-sm-6 col-xs-12 d-inline-block">
                     <textarea rows="4" id="desc" name="desc" formControlName="Description"
-                      placeholder="Catagory Description" class="form-control" [disabled]="FieldDisabled">
+                      placeholder="Catagory Description" class="form-control text-uppercase" [disabled]="FieldDisabled">
                     </textarea>
                   </div>
                 </div>
@@ -108,7 +108,7 @@
                 <i class="fa fa-refresh"></i>&nbsp; Clear
               </a>
               <a href="javascript:void(0)" id="prevbtn" disabled="disabled" class="buttonPrevious btn btn-primary"
-                (click)="AddNewRule()">
+                (click)="AddCatagory()">
                 <i class="fa fa-upload"></i>&nbsp; Submit
               </a>
             </div>

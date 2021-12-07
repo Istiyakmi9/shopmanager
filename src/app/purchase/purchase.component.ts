@@ -1,6 +1,6 @@
-import { Purchases, AddItems } from "./../../providers/constants";
+import { Purchases, AddItems, Catagory } from "./../../providers/constants";
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, SearchRequest } from "../../providers/common-service/common.service";
 import { AjaxService } from "../../providers/ajax.service";
 import { PageCache } from "src/providers/PageCache";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
@@ -22,41 +22,49 @@ declare var $:any;
   styleUrls: ["./purchase.component.scss"]
 })
 export class PurchaseComponent implements OnInit {
-  PageCachingData: any;
   PurchasedTotalPrice: number = 0.0;
-  StockBindingData: any = {
-    data: [],
-    placeholder: "No data available"
-  };
+  StockBindingData: Array<any> = [{
+    value: -1,
+    text: "No data available"
+  }];
   IsDataReady: boolean = false;
   OtherTax: any = 0;
   GrandAmount: number = 0.0;
   CustomerDefaultSelection: any;
   TaxField: any;
   TotalAmountField: any;
-  CustomerDetail: any = {
-    data: [],
-    placeholder: "No data available"
-  };
+  CustomerData: Array<any> = [{
+    text: "Select customer",
+    value: -1
+  }];
   AllowedKey = [8, 46, 9];
+  CalculationKeys = ['+', '-', '/', '*', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
   ItemRows: any = [];
   Type: any = "no-style";
-  BillingFormGroup: any;
-  FieldClass: string = "noStyle";
+  FieldClass: string = "grid-rows";
   Grid: any;
   DescriptValue: string = "";
   LastKey: string = "";
 
   purchaseFormGroup: FormGroup = this.fb.group({});
+  NoOfRows: number;
+  
+  
   itemDetail: FormArray;
-  $Qnty: any;
   Items: Dictionary<string, number>;
   IsPurchasePage: boolean = false;
-  NoOfRows: number;
   CurrentIGSTTax: number = 0;
   CurrentSGSTTax: number = 0;
   CurrentCGSTTax: number = 0;
   CurrentItemActualPrice: number = 0;
+
+  goodsItem: Array<any> = null;
+  catagories: Array<any> = null;
+  TotalAmount: FormControl = null;
+  TotalTaxAmount: FormControl = null;
+  FinalAmount: FormControl = null;
+  Price: number = 0;
+  TotalTax: number = 0;
 
   constructor(
     private commonService: CommonService,
@@ -66,13 +74,18 @@ export class PurchaseComponent implements OnInit {
     private storage: ApplicationStorage,
     private fb: FormBuilder
   ) {
-    this.NoOfRows = 15;
+    this.NoOfRows = 10;
     if (this.commonService.GetCurrentPageName() === Purchases) {
       this.IsPurchasePage = true;
       this.NoOfRows = 10;
     }
     this.ReLoadMasterData();
     this.Items = new Dictionary<string, number>();
+  }
+
+  get GridDetail(): FormArray {
+    let data = this.purchaseFormGroup.get('GridDetail') as FormArray
+    return data;
   }
 
   BindDynamicGrid() {
@@ -88,22 +101,7 @@ export class PurchaseComponent implements OnInit {
         ShopName: new FormControl(""),
         BillNo: new FormControl("", Validators.required)
       }),
-      GridDetail: this.fb.array(
-        this.BillingFormGroup.map((x, index) =>
-          this.fb.group({
-            ItemName: new FormControl(""),
-            Description: new FormControl(""),
-            Quantity: new FormControl(""),
-            TaxAmount: new FormControl(""),
-            TotalAmount: new FormControl(""),
-            BrandName: new FormControl(""),
-            Price: new FormControl(""),
-            SellingPrice: new FormControl(""),
-            ActualPrice: new FormControl(""),
-            Qty: new FormControl("")
-          })
-        )
-      )
+      GridDetail: this.InitBillingRows(this.NoOfRows)
     });
   }
 
@@ -185,13 +183,10 @@ export class PurchaseComponent implements OnInit {
       while (index < rows.length) {
         this.commonService.ResetDropdown($(rows[index]));
         $(rows[index])
-          .find('input[name="Description"]')
+          .find('input[name="Quantity"]')
           .val("");
         $(rows[index])
           .find('input[name="Price"]')
-          .val("");
-        $(rows[index])
-          .find('input[name="Quantity"]')
           .val("");
         $(rows[index])
           .find('input[name="BrandName"]')
@@ -422,11 +417,6 @@ export class PurchaseComponent implements OnInit {
                       .find(`tr:nth-child(${index + 1}) input[name="Price"]`)
                       .val(),
                     Discount: 0,
-                    Description: $table
-                      .find(
-                        `tr:nth-child(${index + 1}) input[name="Description"]`
-                      )
-                      .val(),
                     TaxAmount: $table
                       .find(
                         `tr:nth-child(${index + 1}) input[name="TaxAmount"]`
@@ -553,7 +543,7 @@ export class PurchaseComponent implements OnInit {
       }
       $(event?.currentTarget)
         .closest("tr")
-        .find('div[name="description"] > input')
+        .find('div[name="Quantity"] > input')
         .focus();
     } else {
       let Row = $(`#billing-body tr:nth-child(${position + 1})`);
@@ -569,76 +559,36 @@ export class PurchaseComponent implements OnInit {
   }
 
   ReLoadMasterData() {
-    this.http.get("master/PageMasterData").then(
+    //-------------------  for testing it is enabled manually ------------------------------//
+    this.IsPurchasePage = true;
+    let data: SearchRequest = new SearchRequest();
+    data.SearchString = "1=1";
+    this.http.post("itemandgoods/GetStocksToAddNew", data).then(
       response => {
-        this.cache.clear();
-        this.storage.clear();
-        this.storage.set(response);
-        let index = 0;
-        while (index < 50) {
-          this.ItemRows.push(index + 1);
-          index++;
-        }
-        if (this.IsPurchasePage) {
-          this.PageCachingData = this.cache.get("Stocks");
-          if (this.PageCachingData !== null) {
-            //this.PrepareDropdownData();
-            this.StockBindingData = {
-              data: [],
-              placeholder: ""
-            };
-            let BindingData = [];
-            let index = 0;
-            while (index < this.PageCachingData.length) {
-              BindingData.push({
-                value:
-                  this.PageCachingData[index].ItemName +
-                  " @[" +
-                  this.PageCachingData[index].BrandName +
-                  "]",
-                data: {
-                  stockUid: this.PageCachingData[index].StockUid,
-                  catagoryUid: this.PageCachingData[index].CatagoryUid,
-                  brandUid: this.PageCachingData[index].BrandUid,
-                  brandName: this.PageCachingData[index].BrandName
-                }
-              });
-              index++;
-            }
-            this.StockBindingData["data"] = BindingData;
-            this.loadInitData();
-            this.IsDataReady = true;
-          } else {
-            this.commonService.ShowToast(
-              "No item added. Please go to setting and add product.",
-              10
-            );
-          }
-        } else {
-          this.PageCachingData = this.cache.get("Catagory");
-          if (this.PageCachingData == null) {
-            this.PageCachingData = [];
-          }
-          //this.PrepareDropdownData();
-          this.StockBindingData = {
-            data: [],
-            placeholder: ""
-          };
-          let BindingData = [];
-          let index = 0;
-          while (index < this.PageCachingData.length) {
-            BindingData.push({
-              value: this.PageCachingData[index].CatagoryName,
-              data: {
-                catagoryUid: this.PageCachingData[index].CatagoryUid
+        if(response.responseBody) {
+          this.BindCustomers(response.responseBody["customers"]);
+          this.goodsItem = response.responseBody.rows;
+          if(this.goodsItem) {
+            this.StockBindingData = [{
+              value: 0,
+              text: "Stock Item"
+            }];
+            if (this.IsPurchasePage) {
+              let index = 0;
+              while(index < this.goodsItem.length) {
+                this.StockBindingData.push({ 
+                  value: this.goodsItem[index]["StockUid"], 
+                  text: this.goodsItem[index]["ItemName"] 
+                });
+                index++;
               }
-            });
-            index++;
+            } else {
+
+            }
           }
-          this.StockBindingData["data"] = BindingData;
-          this.loadInitData();
-          this.IsDataReady = true;
-        }
+        } 
+        this.loadInitData();
+        this.IsDataReady = true;
       },
       error => {
         this.commonService.ShowToast(
@@ -649,8 +599,22 @@ export class PurchaseComponent implements OnInit {
     );
   }
 
+  BindCustomers(customers: Array<any>) {
+    if(customers) {
+      let index = 0;
+      while(index < customers.length) {
+        this.CustomerData = [{
+          text: `${customers[index].FirstName} ${customers[index].LastName}`,
+          value: customers[index].CustomerUid
+        }];
+        index++
+      }
+    }
+  }
+
   AddMoreRows() {
-    this.BillingFormGroup.push(this.GetRow());
+    let BillingFormGroup: FormArray = this.purchaseFormGroup.get("GridDetail") as FormArray;
+    BillingFormGroup.push(this.GetRow());
   }
 
   DeleteRow() {
@@ -661,21 +625,45 @@ export class PurchaseComponent implements OnInit {
     alert("edit");
   }
 
-  GetRow() {
-    return {
-      Quantity: [""],
-      Price: [""],
-      TotalPrice: [""],
-      StockDetail: this.StockBindingData,
-      BrandDetail: {
-        data: [],
-        placeholder: "No brand"
-      }
-    };
+  GetRow(): FormGroup {
+    return this.fb.group({
+      ItemName: new FormControl(""),
+      StockUid: new FormControl(""),
+      Discount: new FormControl(""),
+      Price: new FormControl(""),
+      Quantity: new FormControl(""),
+      AvailableQuantity: new FormControl(""),
+      CGST: new FormControl(0),
+      SGST: new FormControl(0),
+      IGST: new FormControl(0),
+      Tax: new FormControl(""),
+      TaxAmount: new FormControl(""),
+      TotalAmount: new FormControl(""),
+      FinalAmount: new FormControl("")
+    });
   }
 
-  InitBillingRows(RowCount: number): Array<any> {
-    let Row = [];
+  GetBrands() {
+    let brands = [];
+    let brandsRecords = this.storage.get(null, "brands");
+    if(!brandsRecords)
+      brandsRecords = [{
+        text: "No brand",
+        value: -1
+      }];
+    else {
+      
+      let index = 0;
+      while(index < brandsRecords.length) {
+        brands.push({ text: brandsRecords[index].BrandName, value: brandsRecords[index].BrandUid });
+        index++;
+      }
+    }
+    return brands;
+  }
+
+  InitBillingRows(RowCount: number): FormArray {
+    let Row: FormArray = this.fb.array([]);
     let index = 0;
     while (index < RowCount) {
       Row.push(this.GetRow());
@@ -684,29 +672,27 @@ export class PurchaseComponent implements OnInit {
     return Row;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.catagories = this.storage.get(null, Catagory);
+  }
 
   loadInitData() {
-    this.BillingFormGroup = this.InitBillingRows(this.NoOfRows);
     this.BindDynamicGrid();
     //this.HandleAutoClose();
     let Data = this.storage.get("master", "Vendor");
-    if (this.commonService.IsValid(Data)) {
+    if (Data) {
       let NamedData = [];
       let index = 0;
       while (index < Data.length) {
-        if (
-          Data[index]["FirstName"] !== null &&
-          Data[index]["FirstName"] !== ""
-        ) {
+        if (!Data[index]["FirstName"]) {
           NamedData.push({
-            value: Data[index]["FirstName"] + " " + Data[index]["LastName"],
-            data: Data[index]["CustomerUid"]
+            text: Data[index]["FirstName"] + " " + Data[index]["LastName"],
+            value: Data[index]["CustomerUid"]
           });
         }
         index++;
       }
-      this.CustomerDetail["data"] = NamedData;
+      //this.CustomerDetail["data"] = NamedData;
       this.CustomerDefaultSelection = NamedData[0];
 
       let DataByMobile = [];
@@ -725,68 +711,10 @@ export class PurchaseComponent implements OnInit {
       }
     }
 
-    this.CustomerDetail["placeholder"] = "Customer Name";
+    //this.CustomerDetail["placeholder"] = "Customer Name";
     setTimeout(() => {
       this.Grid = $("#billing-body");
     }, 1000);
-  }
-
-  PrepareDropdownData() {
-    this.http.get("Master/PageMasterData").then(
-      data => {
-        this.storage.clear();
-        this.storage.set(data);
-        this.StockBindingData = {
-          data: [],
-          placeholder: ""
-        };
-        let BindingData = [];
-        let index = 0;
-        while (index < this.PageCachingData.length) {
-          BindingData.push({
-            value:
-              this.PageCachingData[index].ItemName +
-              " @[" +
-              this.PageCachingData[index].BrandName +
-              "]",
-            data: {
-              stockUid: this.PageCachingData[index].StockUid,
-              catagoryUid: this.PageCachingData[index].CatagoryUid,
-              brandUid: this.PageCachingData[index].BrandUid,
-              brandName: this.PageCachingData[index].BrandName
-            }
-          });
-          index++;
-        }
-        this.StockBindingData["data"] = BindingData;
-        this.loadInitData();
-      },
-      error => {
-        this.commonService.ShowToast("Unable to fetch Master Data");
-      }
-    );
-  }
-
-  CalculateTotalAmount() {
-    let $validrows = $("#billtable").find('tr[isvalid="true"]');
-    if ($validrows !== null && $validrows.length > 0) {
-      let index = 0;
-      let TotalAmount = 0;
-      this.PurchasedTotalPrice = 0;
-      while (index < $validrows.length) {
-        try {
-          TotalAmount = parseInt(
-            $($validrows[index])
-              .find('input[name="TotalAmount"]')
-              .val()
-          );
-          if (!isNaN(TotalAmount)) {
-            this.PurchasedTotalPrice += TotalAmount;
-          }
-        } catch (e) {}
-        index++;
-      }
-    }
   }
 
   // ScrollToAvailableRow(Record: any) {
@@ -832,6 +760,70 @@ export class PurchaseComponent implements OnInit {
   // }
 
   //HandleAutoClose() {}
+
+  FindDueAmount(event: any) {
+    let UserAmount = 0;
+    try {
+      UserAmount = parseFloat($(event.currentTarget).val());
+      if (UserAmount <= this.PurchasedTotalPrice) {
+        $("#DueAmount").val(this.PurchasedTotalPrice - UserAmount);
+      }
+    } catch (e) {
+      this.commonService.ShowToast("Invalid amount.");
+    }
+  }
+
+  OnItemSelection(e: any, position: number) {
+    let currentItem = this.goodsItem.find(x=>x.StockUid == e.value);
+    if(currentItem) {
+      this.TotalTax = 0;
+      let row: FormGroup = this.purchaseFormGroup.get("GridDetail")["controls"][position];
+      let catagory = this.catagories.find(x=>x.CreatedBy == currentItem.CatagoryUid);
+      if(catagory) {
+        this.TotalTax = Number(catagory.CGST) + Number(catagory.SGST) + Number(catagory.IGST);
+      }
+
+      row.get("CGST").setValue(catagory.CGST);
+      row.get("SGST").setValue(catagory.SGST);
+      row.get("IGST").setValue(catagory.IGST);
+
+      this.Price = Number(currentItem.SellingPrice);
+      row.get("Price").setValue(this.Price);
+      
+      row.get("Quantity").setValue('');
+      row.get("AvailableQuantity").setValue(Number(currentItem.AvailableQuantity));
+      row.get("Tax").setValue(this.TotalTax);
+      
+      this.TotalTaxAmount = row.get("TaxAmount") as FormControl;
+      this.TotalTaxAmount.setValue(0);
+      
+      this.TotalAmount = row.get("TotalAmount") as FormControl;
+      this.TotalAmount.setValue(0);
+
+      this.FinalAmount = row.get("FinalAmount") as FormControl;
+      this.FinalAmount.setValue(0);
+      
+      row.get("ItemName").setValue(e.text);
+      row.get("StockUid").setValue(e.value);
+      row.get("Discount").setValue(0);
+    }
+  }
+
+  //----------------------  Amount calculation -----------------------
+
+  // PrepareBinding(event: any) {
+  //   this.$Qnty = $(event.currentTarget)
+  //     .closest("tr")
+  //     .find('input[name="Quantity"]');
+
+  //   this.TaxField = $(event.currentTarget)
+  //     .closest("tr")
+  //     .find('input[name="TaxAmount"]');
+
+  //   this.TotalAmountField = $(event.currentTarget)
+  //     .closest("tr")
+  //     .find('input[name="TotalAmount"]');
+  // }
 
   HandleDescription(event: any) {
     let value = "";
@@ -881,7 +873,7 @@ export class PurchaseComponent implements OnInit {
   }
 
   CalculateDescription(DescValue: string) {
-    let ActualValue = 0;
+    let totalQuantity = 0;
     if (DescValue != null) {
       let Items = DescValue.split("+");
       if (Items.length > 0) {
@@ -903,8 +895,8 @@ export class PurchaseComponent implements OnInit {
                 }
               }
             }
-            if (multipledData == 0) ActualValue += parseInt(Items[index]);
-            else ActualValue += multipledData;
+            if (multipledData == 0) totalQuantity += parseInt(Items[index]);
+            else totalQuantity += multipledData;
             index++;
           }
         } catch (e) {
@@ -912,88 +904,18 @@ export class PurchaseComponent implements OnInit {
         }
       }
     }
-    if (!isNaN(ActualValue)) {
-      this.$Qnty.val(ActualValue);
-      this.CalculateAllGstTaxes(ActualValue);
+    if (!isNaN(totalQuantity)) {
+      let totalPrice = this.Price * totalQuantity;
+      let totalTaxAmount = parseFloat(parseFloat(((totalPrice * this.TotalTax) / 100).toFixed(2)).toFixed(2));
+      this.TotalTaxAmount.setValue(totalTaxAmount);
+
+      this.TotalAmount.setValue(totalPrice);
+      this.FinalAmount.setValue(totalPrice + totalTaxAmount);
       this.CalculateTotalAmount();
     }
   }
 
-  PrepareBinding(event: any) {
-    this.$Qnty = $(event.currentTarget)
-      .closest("tr")
-      .find('input[name="Quantity"]');
-
-    this.TaxField = $(event.currentTarget)
-      .closest("tr")
-      .find('input[name="TaxAmount"]');
-
-    this.TotalAmountField = $(event.currentTarget)
-      .closest("tr")
-      .find('input[name="TotalAmount"]');
-  }
-
-  CalculateAllGstTaxes(ActualQuantity: any) {
-    try {
-      if (
-        this.CurrentItemActualPrice !== null &&
-        this.CurrentItemActualPrice > 0
-      ) {
-        let Amount: number =
-          parseFloat(parseFloat(ActualQuantity).toFixed(2)) *
-          this.CurrentItemActualPrice;
-        if (!isNaN(Amount)) {
-          try {
-            let TaxAmount = 0;
-            if (this.CurrentIGSTTax > 0) {
-              TaxAmount += parseFloat(
-                parseFloat(
-                  ((Amount * this.CurrentIGSTTax) / 100).toFixed(2)
-                ).toFixed(2)
-              );
-            }
-
-            if (this.CurrentSGSTTax > 0) {
-              TaxAmount += parseFloat(
-                parseFloat(
-                  ((Amount * this.CurrentSGSTTax) / 100).toFixed(2)
-                ).toFixed(2)
-              );
-            }
-
-            if (this.CurrentCGSTTax > 0) {
-              TaxAmount += parseFloat(
-                parseFloat(
-                  ((Amount * this.CurrentCGSTTax) / 100).toFixed(2)
-                ).toFixed(2)
-              );
-            }
-
-            this.TaxField.val(TaxAmount);
-            this.TotalAmountField.val(Amount + TaxAmount);
-          } catch (e) {
-            this.commonService.ShowToast(
-              "Getting error on tax calculation. Please contact to admin."
-            );
-          }
-        }
-      }
-    } catch (e) {
-      this.commonService.ShowToast(
-        "Getting error on tax calculation. Please contact to admin."
-      );
-    }
-  }
-
-  FindDueAmount(event: any) {
-    let UserAmount = 0;
-    try {
-      UserAmount = parseFloat($(event.currentTarget).val());
-      if (UserAmount <= this.PurchasedTotalPrice) {
-        $("#DueAmount").val(this.PurchasedTotalPrice - UserAmount);
-      }
-    } catch (e) {
-      this.commonService.ShowToast("Invalid amount.");
-    }
+  CalculateTotalAmount() {
+    
   }
 }

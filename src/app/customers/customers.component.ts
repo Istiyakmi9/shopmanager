@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import * as $ from "jquery";
-import { NgForm } from "@angular/forms";
-import { CommonService } from "../../providers/common-service/common.service";
+import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
+import { CommonService, Toast } from "../../providers/common-service/common.service";
 import { AjaxService } from "../../providers/ajax.service";
 import { iNavigation } from "src/providers/iNavigation";
 import { ApplicationStorage } from "./../../providers/ApplicationStorage";
@@ -12,23 +12,74 @@ import { ApplicationStorage } from "./../../providers/ApplicationStorage";
   styleUrls: ["./customers.component.scss"]
 })
 export class CustomersComponent implements OnInit {
-  @ViewChild("customerform") CustomerData: NgForm;
   @ViewChild("vendorform") VendorData: NgForm;
   UserImagePath: string = this.commonService.DefaultUserImage();
   UserImage: any;
   Vendor: any = {};
   UserDetail: any = {};
-  IsCustomer: boolean = true;
+  IsCustomer: boolean = false;
+  customerform: FormGroup;
+
   constructor(
     private commonService: CommonService,
     private http: AjaxService,
     private nav: iNavigation,
-    private storage: ApplicationStorage
+    private storage: ApplicationStorage,
+    private fb: FormBuilder
   ) {
-    this.ClearAllFields();
+    this.UserDetail["UserImagePath"] = this.commonService.DefaultUserImage();
+    this.Vendor["UserImagePath"] = this.commonService.DefaultUserImage();
+  }
+
+  initForm() {
+    this.customerform = this.fb.group({
+      UserImagePath: new FormControl(""),
+      Mobile: new FormControl(this.UserDetail.Mobile, Validators.required),
+      FullName: new FormControl(this.UserDetail.FullName, Validators.required),
+      FirstName: new FormControl(""),
+      LastName: new FormControl(""),
+      AlternetMobileNo: new FormControl(this.UserDetail.AlternetMobileNo),
+      Email: new FormControl(this.UserDetail.Email, Validators.required),
+      Dob: new FormControl(""),
+      Address: new FormControl(this.UserDetail.Address),
+      ShopPhoneNumber: new FormControl(this.UserDetail.ShopPhoneNumber),
+      ShopName: new FormControl(this.UserDetail.ShopName),
+      LicenseNo: new FormControl(this.UserDetail.LicenseNo),
+      GSTNo: new FormControl(this.UserDetail.GSTNo),
+      State: new FormControl(this.UserDetail.State),
+      City: new FormControl(this.UserDetail.City),
+      Pincode: new FormControl(this.UserDetail.Pincode),
+      BankAccountNo: new FormControl(this.UserDetail.BankAccountNo),
+      IFSCCode: new FormControl(this.UserDetail.IFSCCode),
+      ImagePath: new FormControl(this.UserDetail.ImagePath),
+      ShopUid: new FormControl(this.UserDetail.ShopUid),
+      IsClient: new FormControl(true),
+      IsVendor: new FormControl(false),
+      CustomerUid: new FormControl(this.UserDetail.CustomerUid)
+    });
+  }
+
+  enableVendor() {
+    this.customerform.get("IsClient").setValue(false);
+  }
+
+  enableCustomer() {
+    this.customerform.get("IsVendor").setValue(false);
   }
 
   ngOnInit() {
+    let data = this.nav.getValue();
+    if(data)
+      this.loadData(data["data"]);
+    else {
+      this.initForm();
+      this.IsCustomer = true;
+    }
+  }
+
+  loadData(value: string) {
+    let objectData = JSON.parse(value);
+    this.BindCustomerDetail(objectData);
     this.ManageCustomer();
   }
 
@@ -41,35 +92,32 @@ export class CustomersComponent implements OnInit {
   }
 
   ManageCustomer() {
-    let NavData = this.nav.getValue();
-    let SearchStr = "";
-    if (this.commonService.IsValid(NavData)) {
-      if (NavData["data"].HiddenFields.length > 0) {
-        let Uid = NavData["data"].HiddenFields[0].value;
-        let Uri = `Registration/CurrentUserDetail?UserUid=${Uid}`;
-        this.http.get(Uri).then(
-          data => {
-            if (typeof data["Record"] !== "undefined") {
-              let ServerData = data["Record"][0];
-              let flag = ServerData.IsClient;
-              if (flag) {
-                this.IsCustomer = true;
-                this.BindCustomerDetail(ServerData);
-              } else {
-                this.IsCustomer = false;
-                this.BindVendorDetail(ServerData);
-              }
-            } else {
-              this.commonService.ShowToast("Server error. Contact to admin.");
-            }
-          },
-          err => {
-            console.log(JSON.stringify(err));
-            this.commonService.ShowToast("Server error. Contact to admin.");
+    let Uid = "";
+    let Uri = `reports/GetCustomerById?UserUid=${this.UserDetail.CustomerUid}`;
+    this.http.get(Uri).then(
+      data => {
+        if (typeof data["Record"] !== "undefined") {
+          let ServerData = data["Record"][0];
+          let flag = ServerData.IsClient;
+          if (flag) {
+            this.IsCustomer = true;
+            this.BindCustomerDetail(ServerData);
+          } else {
+            this.IsCustomer = false;
+            this.BindVendorDetail(ServerData);
           }
-        );
+        } else {
+          this.commonService.ShowToast("Server error. Contact to admin.");
+        }
+
+        this.initForm();
+        this.IsCustomer = true;
+      },
+      err => {
+        console.log(JSON.stringify(err));
+        this.commonService.ShowToast("Server error. Contact to admin.");
       }
-    }
+    );
   }
 
   BindVendorDetail(ServerData: any) {
@@ -77,13 +125,12 @@ export class CustomersComponent implements OnInit {
       ? this.http.GetImageBasePath() + ServerData.ImagePath
       : this.commonService.DefaultUserImage();
     this.Vendor = {
-      UserImagePath: UserImagePath,
-      MobileNo: ServerData.MobileNo,
+      Mobile: ServerData.Mobile,
       FullName: ServerData.FirstName + " " + ServerData.LastName,
       AlternetMobileNo: ServerData.AlternetMobileNo,
-      EmailId: ServerData.EmailId,
+      Email: ServerData.EmailId,
       Dob: ServerData.UserDob,
-      FullAddress: ServerData.FullAddress,
+      Address: ServerData.FullAddress,
       ShopPhoneNumber: ServerData.ShopPhoneNumber,
       ShopName: ServerData.ShopName,
       LicenseNo: ServerData.LicenseNo,
@@ -91,7 +138,7 @@ export class CustomersComponent implements OnInit {
       State: ServerData.State,
       City: ServerData.City,
       Pincode: ServerData.Pincode,
-      CustBankAccountNo: ServerData.AccountNo,
+      BankAccountNo: ServerData.AccountNo,
       IFSCCode: ServerData.Ifsc,
       ImagePath: UserImagePath,
       CustomerUid: ServerData.CustomerUid
@@ -103,13 +150,12 @@ export class CustomersComponent implements OnInit {
       ? this.http.GetImageBasePath() + ServerData.ImagePath
       : this.commonService.DefaultUserImage();
     this.UserDetail = {
-      UserImagePath: UserImagePath,
-      MobileNo: ServerData.MobileNo,
+      Mobile: ServerData.MobileNo,
       FullName: ServerData.FirstName + " " + ServerData.LastName,
       AlternetMobileNo: ServerData.AlternetMobileNo,
-      EmailId: ServerData.EmailId,
+      Email: ServerData.EmailId,
       Dob: ServerData.UserDob,
-      FullAddress: ServerData.FullAddress,
+      Address: ServerData.FullAddress,
       ShopPhoneNumber: ServerData.ShopPhoneNumber,
       ShopName: ServerData.ShopName,
       LicenseNo: ServerData.LicenseNo,
@@ -117,7 +163,7 @@ export class CustomersComponent implements OnInit {
       State: ServerData.State,
       City: ServerData.City,
       Pincode: ServerData.Pincode,
-      CustBankAccountNo: ServerData.AccountNo,
+      BankAccountNo: ServerData.AccountNo,
       IFSCCode: ServerData.Ifsc,
       ImagePath: UserImagePath,
       CustomerUid: ServerData.CustomerUid
@@ -159,8 +205,11 @@ export class CustomersComponent implements OnInit {
       let reader = new FileReader();
       reader.readAsDataURL(this.UserImage);
       reader.onload = fileEvent => {
-        if (this.IsCustomer) this.UserDetail.UserImagePath = reader.result;
-        else this.Vendor.UserImagePath = reader.result;
+        if (this.IsCustomer){
+          this.UserDetail.UserImagePath = reader.result;
+        } else {
+          this.Vendor.UserImagePath = reader.result;
+        }
       };
       console.log(this.UserImage.filename);
     } else {
@@ -169,43 +218,55 @@ export class CustomersComponent implements OnInit {
   }
 
   SubmitCustomerForm() {
-    let CuxtData = this.CustomerData.value;
-    let Keys = Object.keys(CuxtData);
-    let IsValidForm = this.commonService.ValidateForm(Keys);
-    if (IsValidForm === 0) {
-      let FullName = CuxtData.FullName;
-      let PartedName = FullName.split(" ");
-      if (PartedName.length === 1) {
-        CuxtData["FirstName"] = FullName.trim().toUpperCase();
-        CuxtData["LastName"] = "";
-      } else {
-        CuxtData["FirstName"] = PartedName[0].trim().toUpperCase();
-        PartedName.splice(0, 1);
-        CuxtData["LastName"] = PartedName.join(" ")
-          .trim()
-          .toUpperCase();
-      }
-      let formData = new FormData();
-      formData.append("image", this.UserImage);
-      formData.append("userDetail", JSON.stringify(CuxtData));
-
-      this.http.upload("Registration/Customer", formData).then(
-        data => {
-          if (typeof data !== "undefined" && Object.keys(data).length > 0) {
-            this.commonService.ShowToast("Customer created successfully.");
-            this.storage.set(data);
-          } else {
-            this.commonService.ShowToast(
-              "Server error. Please contact to admin."
-            );
-          }
-        },
-        error => {
-          this.commonService.ShowToast(
-            "Server error. Please contact to admin."
-          );
+    if (this.customerform.valid) {
+      let CustomerFullName = "";
+      let errorFlag = false;
+      if(this.customerform.controls.FullName.errors != null)
+      errorFlag = true;
+      else {
+        CustomerFullName = this.customerform.get("FullName").value;
+        let Names = CustomerFullName.split(" ");
+        if(Names && Names.length > 0) {
+          this.customerform.get("FirstName").setValue(Names.shift());
+          this.customerform.get("LastName").setValue(Names.join(" "));
         }
-      );
+      }
+
+      if(this.customerform.controls.Mobile.errors != null)
+      errorFlag = true;
+      
+      if(this.customerform.controls.Email.errors != null)
+      errorFlag = true;
+      
+      if(errorFlag) {
+        Toast("Name, Mobil and Email is required field.");
+        return;
+      }
+      
+      let custId = this.customerform.get("CustomerUid").value;
+      let customerData = this.customerform.value;
+      if(custId != "")
+        customerData["UserUid"] = Number(custId);
+      if(!errorFlag) {
+        let formData = new FormData();
+        formData.append("image", this.UserImage);
+        formData.append("userDetail", JSON.stringify(customerData));
+  
+        this.http.upload("registration/Customer", formData).then(
+          data => {
+            if (data) {
+              Toast("Customer created/updated successfully.");
+            } else {
+              Toast("Server error. Please contact to admin.");
+            }
+          },
+          error => {
+            Toast("Server error. Please contact to admin.");
+          }
+        );
+      } else {
+        Toast("Please fill all mandatory fields");
+      }
     }
   }
 

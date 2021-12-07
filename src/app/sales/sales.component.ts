@@ -10,7 +10,6 @@ import { ITable } from "./../../providers/Generic/Interface/ITable";
   styleUrls: ["./sales.component.scss"]
 })
 export class SalesComponent implements OnInit {
-  DynamicTableDetail: ITable;
   constructor(private commonService: CommonService) {
     this.BindDynamicTableDetail();
   }
@@ -18,13 +17,7 @@ export class SalesComponent implements OnInit {
   FilterPageData(e: any) {}
 
   BindDynamicTableDetail() {
-    this.DynamicTableDetail = {
-      rows: SalesColumn,
-      url: "GetNoDueSoldItemsByFilter",
-      SearchStr: "1=1",
-      SortBy: "ItemUid",
-      editUrl: Sales
-    };
+   
   }
 
   ngOnInit() {}

@@ -69,6 +69,9 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
   manualFocus: boolean = false;
   DefaultValue: any = null;
   IsSingleMode: boolean = false;
+  hiddenelem: any = null;
+  nextTabIndex: number = 0;
+  currentTabIndex: number = 0;
 
   onChange = (quantity) => {};
 
@@ -95,12 +98,17 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
   }
 
 
-  @Input() filterByServer: any;
+  //@Input() filterByServer: any;
   @Input() ClassName: any;
-  @Input() Tabindex: any;
+  @Input() 
+  set Tabindex(value: any) {
+    if(value) {
+      this.currentTabIndex = Number(value);
+      this.nextTabIndex = this.currentTabIndex + 1;
+    }
+  }
   @Output() OnSelect = new EventEmitter();
   @Output() onKeyup = new EventEmitter();
-  @Output() onFocus = new EventEmitter();
   @Input()
   set SingleMode(mode: string) {
     if (typeof mode !== "undefined") {
@@ -138,7 +146,7 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
   }
 
   BindDefaultValue() {
-    if (this.DefaultValue !== null && this.DropdownData !== null) {
+    if (this.DefaultValue !== null && this.DropdownData) {
       let elems = this.DropdownData.filter(
         (x) => x.value === this.DefaultValue
       );
@@ -252,7 +260,8 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
   }
 
   ShowAutofillDropdown() {
-    this.onFocus.emit();
+    let e: any = event.target;
+    this.hiddenelem = e.closest("div").querySelector("input[name='autocomplete']");
     if (!this.manualFocus) {
       this.ManageBindingData();
       let $event = $(event.currentTarget).closest(
@@ -324,11 +333,12 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
           b.onValueChange();
         }, b.options.deferRequestBy);
       else {
-        if (this.filterByServer) {
-          this.currentValue = this.element.value;
-          a = this.getQuery(this.currentValue);
-          this.onKeyup.emit(a);
-        } else b.onValueChange();
+        // if (this.filterByServer) {
+        //   this.currentValue = this.element.value;
+        //   a = this.getQuery(this.currentValue);
+        //   this.onKeyup.emit(a);
+        // } else 
+        b.onValueChange();
       }
   }
 
@@ -406,6 +416,8 @@ export class IautocompleteComponent implements OnInit, ControlValueAccessor {
       this.hide(),
       this.onValueSelect(a));
     this.selectOption(c, a);
+    this.hiddenelem.focus();
+    this.OnSelect.emit(c);
   }
 
   selectOption(c, a) {

@@ -1,9 +1,11 @@
-import { IGrid } from "./IGrid";
+import { IColumns } from "./IColumns";
 
 export interface ITable {
-  rows: Array<IGrid>;
-  url: string;
-  SearchStr: string;
-  SortBy?: string;
-  editUrl?: string;
+  headers: Array<IColumns>;
+  rows: any;
+  totalCount: number;
+  pageSize: number;
+  pageIndex: number;
+  url?: string;
+  inlineContent?: boolean;
 }

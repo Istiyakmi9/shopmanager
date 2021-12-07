@@ -22,6 +22,20 @@ export const PurchaseCredit = "purchasecredit";
 export const AddItems = "addItems";
 export const PurchaseItems = "purchaseItems";
 export const DefaultUserImage = "assets/defaultuser.jpg";
+export const Total = "total";
+export const ZerothIndex = 0;
+export const Columns = "columns";
+export const Rows = "rows";
+
+// --------  Storage variable names
+export const Catagory = "catagory";
+export const Brands = "brands";
+export const Menu = "menu";
+
+export const Inserted = "Inserted successfully.";
+export const Updated = "Updated successfully.";
+export const FailToInsert = "Fail to insert.";
+export const FailToUpdate = "Fail to update.";
 
 export const SalesColumn: Array<IGrid> = [
   { column: "CustomerName", header: "Customer", width: 10 },

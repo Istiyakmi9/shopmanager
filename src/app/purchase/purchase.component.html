@@ -28,25 +28,27 @@
                     </li>
                   </ul>
 
-                  <div id="myTabContent" formGroupName="CustomerDetail" class="tab-content">
+                  <div id="myTabContent" formGroupName="CustomerDetail" class="tab-content p-3 pb-0">
                     <!-- Existing customer -->
                     <div role="tabpanel" class="tab-pane fade show active" id="existingcustomer"
                       aria-labelledby="customer-tab">
-                      <div class="col-md-3 d-inline-block">
-                        <label>Vendor name</label>
-                        <div class="form-group row">
-                          <div class="col-md-12">
-                            <app-iautocomplete id="CustomerByName" [Data]="CustomerDetail">
-                            </app-iautocomplete>
+                      <div class="row col-md-12">
+                        <div class="col-md-3">
+                          <label>Vendor name</label>
+                          <div class="form-group row">
+                            <div class="col-md-12">
+                              <app-iautocomplete id="CustomerByName" [Data]="CustomerData" [Placeholder]="'Select vendor'">
+                              </app-iautocomplete>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="col-md-9 d-inline-block" *ngIf="IsPurchasePage">
-                        <label>Bill no. #</label>
-                        <div class="form-group row">
-                          <div class="col-md-12">
-                            <input name="BillNo" id="BillNo" class="form-control" required formControlName="BillNo"
-                              placeholder="Enter bill no. #" />
+                        <div class="col-md-9" *ngIf="IsPurchasePage">
+                          <label>Bill no. #</label>
+                          <div class="form-group row">
+                            <div class="col-md-12">
+                              <input name="BillNo" id="BillNo" class="form-control" required formControlName="BillNo"
+                                placeholder="Enter bill no. #" />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -71,120 +73,123 @@
               <table *ngIf="IsPurchasePage" id="billtable" class="table table-bordered" style="width:100%">
                 <thead>
                   <tr>
-                    <th rowspan="2" class="text-center">#</th>
-                    <th rowspan="2">Item</th>
-                    <th rowspan="2">Desc/Qty.#</th>
+                    <th rowspan="2" class="text-center w-2">#</th>
+                    <th class="w-25" rowspan="2">Item</th>
+                    <th class="w-15 position-relative" rowspan="2">Desc/Qty.# <small class="info-text">[Available]</small></th>
                     <th rowspan="2" class="w-8">Price/-</th>
-                    <th rowspan="2" class="w-10">Qty #</th>
                     <th rowspan="2" class="w-10">Tax Amount</th>
-                    <th rowspan="2">Total</th>
+                    <th rowspan="2" class="w-10">Total</th>
+                    <th class="w-15" rowspan="2">Final</th>
                   </tr>
                 </thead>
                 <tbody id="billing-body" formArrayName="GridDetail">
-                  <tr *ngFor="let item of BillingFormGroup; let i = index" [formGroupName]="i" name="item-record"
+                  <tr *ngFor="let item of GridDetail.controls; let i = index" [formGroupName]="i" name="item-record"
                     [attr.index]="i">
-                    <input hidden="hidden" name="currentStockDetail" />
-                    <td name="table-index">
+                    <td name="table-index" class="">
                       <div class="m-0 p-0 text-center">
                         <label class="m-0 p-0">{{i + 1}}</label>
                       </div>
                     </td>
-                    <td [ngStyle]="{ width: i === 0 ? '30%' : 'auto' }">
+                    <td>
                       <div name="parent-select" class="select-autofill-parent">
-                        <app-iautocomplete name="StockDetail" [ClassName]="FieldClass" [Tabindex]="[i * 4 + 1]"
-                          [Data]="item.StockDetail" (OnSelect)="HandleAutofillData($event)">
+                        <app-iautocomplete name="ItemName" formControlName="ItemName" (OnSelect)="OnItemSelection($event, i)"
+                          [ClassName]="FieldClass" [Tabindex]="[i * 4 + 1]"
+                          [Data]="StockBindingData" [Placeholder]="'Select stock'">
                         </app-iautocomplete>
-                        <input type="hidden" name="ItemName" value="" formControlName="ItemName" />
                       </div>
                     </td>
-                    <td>
-                      <div class="m-0 p-0" name="description">
-                        <input type="text" [attr.Tabindex]="[i * 4 + 2]" formControlName="Description"
-                          (keypress)="HandleDescription($event)" name="Description" (keyup)="ManageDescription($event)"
-                          (focus)="PrepareBinding($event)" class="tbl-input border-0 br-0 bg-white" />
+                    <td class="position-relative">
+                      <small class="info-text">[ {{item.get("AvailableQuantity").value}} ]</small>
+                      <div class="m-0 p-0" name="Quantity">
+                        <input [attr.Tabindex]="[i * 4 + 3]" formControlName="Quantity"
+                          (keypress)="HandleDescription($event)" name="Quantity" (keyup)="ManageDescription($event)"
+                          class="tbl-input border-0 br-0 bg-white" />
                       </div>
                     </td>
-                    <td>
-                      <div class="m-0 p-0" name="price">
-                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="Price" FloatType="true"
-                          (keypress)="ManageDescription($event)" formControlName="Price"
-                          [attr.Tabindex]="[i * 4 + 3]" />
+                    <td class="disabledField w-10">
+                      <div class="m-0 p-0" name="Price">
+                        <input class="tbl-input border-0 br-0 text-muted disabledField" name="Price"
+                          readonly formControlName="Price" />
                       </div>
                     </td>
-                    <td>
-                      <div class="m-0 p-0" name="quantity">
-                        <input type="text" class="tbl-input border-0 br-0 bg-white" readonly name="Quantity"
-                          formControlName="Quantity" />
-                      </div>
-                    </td>
-                    <td>
-                      <div class="m-0 p-0" name="quantity">
-                        <input type="text" readonly class="tbl-input border-0 br-0 bg-white" name="TaxAmount"
+                    <td class="disabledField">
+                      <div class="m-0 p-0 position-relative" name="TaxAmount">
+                        <div class="tax-class text-muted">
+                          <small>
+                            C:<span>{{item.get("CGST").value}}</span> 
+                            S:<span>{{item.get("SGST").value}}</span>
+                            I:<span>{{item.get("IGST").value}}</span>
+                          </small>
+                        </div>
+                        <input readonly class="tbl-input border-0 br-0 text-muted disabledField" name="TaxAmount"
                           formControlName="TaxAmount" />
                       </div>
                     </td>
-                    <td>
+                    <td class="disabledField">
                       <div class="m-0 p-0">
-                        <input readonly class="tbl-input border-0 br-0 bg-white" name="TotalAmount"
+                        <input readonly class="tbl-input border-0 br-0 text-muted disabledField" name="TotalAmount"
                           formControlName="TotalAmount" />
+                      </div>
+                    </td>
+                    <td class="disabledField">
+                      <div class="m-0 p-0" name="FinalAmount">
+                        <input class="tbl-input border-0 br-0 text-muted disabledField" readonly name="FinalAmount"
+                          formControlName="FinalAmount" />
                       </div>
                     </td>
                   </tr>
                 </tbody>
                 <tfoot formGroupName="OtherDetail">
                   <tr>
-                    <th class="bg-white" colspan="3">
-                      <label class="d-block final-lbl mt-4">Transpotation detail &nbsp;
-                        <div class="float-right pr-2">
-                          <i class="fa fa-rupee"></i>&nbsp;
-                        </div>
-                      </label>
-                      <div class="float-left w-100 mt-2">
-                        <label class="position-relative t-20">Transport name:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
-                        <div class="float-right container-100 w-75">
-                          <mat-form-field class="inputfield">
-                            <input type="text" matInput placeholder="Transport name" id="TransportName"
-                              name="TransportName" formControlName="TransportName">
-                          </mat-form-field>
+                    <th class="bg-white" colspan="7">
+                      <div class="col-12 p-0">
+                        <div class="row col-12 mt-4 final-lbl pb-2 mb-4">
+                          <div class="col-6">Transpotation detail & cost in 
+                            <div class="float-right d-inline">
+                              <i class="fas fa-rupee-sign"></i>&nbsp;
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <label class="float-end">Total Amount: {{PurchasedTotalPrice}}&nbsp;</label>
+                          </div>
                         </div>
                       </div>
-                      <div class="float-left w-100">
-                        <label class="position-relative t-20">Vehicle no:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
-                        <div class="float-right container-100 w-75">
-                          <mat-form-field>
-                            <input type="text" matInput placeholder="Vehicle no. #" id="VehicleNo" name="VehicleNo"
-                              formControlName="VehicleNo">
-                          </mat-form-field>
+
+                      <div class="row col-12 p-0">
+                        <div class="col-md-6">
+                          <div class="float-left w-100 mt-2">
+                            <label class="position-relative">Transport name:&nbsp; (<i
+                              class="fas fa-rupee-sign"></i>)</label>
+                            <div class="form-group">
+                              <input type="text" placeholder="Transport name" class="form-control"
+                                name="TransportName" formControlName="TransportName">
+                            </div>
+                          </div>
+                          <div class="float-left w-100">
+                            <label class="position-relative">Vehicle no:&nbsp; (<i
+                                class="fas fa-rupee-sign"></i>)</label>
+                            <div class="form-group">
+                              <input type="text" placeholder="Vehicle no. #" class="form-control" name="VehicleNo"
+                                formControlName="VehicleNo">
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </th>
-                    <th class="bg-white" colspan="4">
-                      <label class="d-block final-lbl mt-4">Grand Total &nbsp;
-                        <div class="float-right pr-2">
-                          <i class="fas fa-rupee-sign"></i>&nbsp;
-                          <label class="position-relative">{{PurchasedTotalPrice}}&nbsp;</label>
-                        </div>
-                      </label>
-                      <div class="float-left w-100 mt-2">
-                        <label class="position-relative t-20">Amount Paid:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
-                        <div class="float-right">
-                          <mat-form-field class="inputfield">
-                            <input type="text" matInput FloatType="true" (keyup)="FindDueAmount($event)"
-                              placeholder="Amount paid" id="PaidAmount" name="PaidAmount" formControlName="PaidAmount">
-                          </mat-form-field>
-                        </div>
-                      </div>
-                      <div class="float-left w-100">
-                        <label class="position-relative t-20">Amount Due:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
-                        <div class="float-right">
-                          <mat-form-field>
-                            <input matInput placeholder="Amount due" disabled id="DueAmount" name="DueAmount"
-                              class="disabled" formControlName="DueAmount">
-                          </mat-form-field>
+                        <div class="col-md-6">
+                          <div class="float-left w-100 mt-2">
+                            <label class="position-relative">Amount Paid:&nbsp; (<i
+                                class="fas fa-rupee-sign"></i>)</label>
+                            <div class="form-group">
+                              <input type="text" FloatType="true" (keyup)="FindDueAmount($event)"
+                                placeholder="Amount paid" class="form-control" name="PaidAmount" formControlName="PaidAmount">
+                            </div>
+                          </div>
+                          <div class="float-left w-100">
+                            <label class="position-relative">Amount Due:&nbsp; (<i
+                                class="fas fa-rupee-sign"></i>)</label>
+                            <div class="form-group">
+                              <input placeholder="Amount due" disabled class="form-control disabled" name="DueAmount" formControlName="DueAmount">
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </th>
@@ -215,26 +220,25 @@
                     </td>
                     <td [ngStyle]="{ width: i === 0 ? '30%' : 'auto' }">
                       <div *ngIf="!IsPurchasePage" name="parent-select" class="select-autofill-parent">
-                        <app-iautocomplete name="StockDetail" [ClassName]="FieldClass" [Tabindex]="[i * 6 + 1]"
-                          [Data]="item.StockDetail" (OnSelect)="HandleAutofillData($event)">
+                        <app-iautocomplete [ClassName]="FieldClass" formControlName="ItemName" [Data]="item.StockDetail">
                         </app-iautocomplete>
                       </div>
                     </td>
                     <td>
                       <div class="m-0 p-0" name="brandname">
-                        <input type="text" [attr.Tabindex]="[i * 6 + 2]" formControlName="BrandName" name="BrandName"
+                        <input [attr.Tabindex]="[i * 6 + 2]" formControlName="BrandName" name="BrandName"
                           class="tbl-input border-0 br-0 bg-white" />
                       </div>
                     </td>
                     <td>
                       <div class="m-0 p-0" name="itemanme">
-                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="ItemName"
+                        <input class="tbl-input border-0 br-0 bg-white" name="ItemName"
                           formControlName="ItemName" [attr.Tabindex]="[i * 6 + 3]" />
                       </div>
                     </td>
                     <td>
                       <div class="m-0 p-0" name="SellingPrice">
-                        <input type="text" class="tbl-input border-0 br-0 bg-white" name="SellingPrice"
+                        <input class="tbl-input border-0 br-0 bg-white" name="SellingPrice"
                           formControlName="SellingPrice" [attr.Tabindex]="[i * 6 + 4]" />
                       </div>
                     </td>

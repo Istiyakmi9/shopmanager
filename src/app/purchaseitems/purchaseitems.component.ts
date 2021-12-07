@@ -10,7 +10,6 @@ import { ITable } from "src/providers/Generic/Interface/ITable";
   styleUrls: ["./purchaseitems.component.scss"]
 })
 export class PurchaseitemsComponent implements OnInit {
-  DynamicTableDetail: ITable;
   constructor(private commonService: CommonService) {
     this.BindDynamicTableDetail();
   }
@@ -18,13 +17,7 @@ export class PurchaseitemsComponent implements OnInit {
   FilterPageData(e: any) {}
 
   BindDynamicTableDetail() {
-    this.DynamicTableDetail = {
-      rows: PurchaseItemsColumn,
-      url: "ItemAndGoods/GetPurchaseItem",
-      SearchStr: "1=1",
-      SortBy: "CustomerUid",
-      editUrl: PurchaseItems
-    };
+    
   }
 
   ngOnInit() {}

@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, NgForm, Validators } from "@angular/forms";
 import { ApplicationStorage } from "../../providers/ApplicationStorage";
-import { CommonService } from "./../../providers/common-service/common.service";
+import { CommonService, Toast } from "./../../providers/common-service/common.service";
 import { AjaxService } from "src/providers/ajax.service";
 import * as $ from "jquery";
+import { Inserted } from "src/providers/constants";
 
 interface CatagoryWithTaxes {
   CatagoryUid: string;
@@ -64,15 +65,26 @@ export class SettingComponent implements OnInit {
     }
   }
 
-  AddNewRule() {
+  AddCatagory() {
     if(this.CatagoryForm.valid) {
-      if(this.CatagoryForm.controls.CatagoryName.errors != null)
-        this.common.ShowToast("Catagory name is required field");
+      let value = "";
+      if(this.CatagoryForm.controls.CatagoryName.errors != null) {
+        Toast("Catagory name is required field");
+        return;
+      } else {
+        value = this.CatagoryForm.get("CatagoryName").value;
+        this.CatagoryForm.get("CatagoryName").setValue(value.toLocaleUpperCase());
+      }
+
+      value = this.CatagoryForm.get("CatagoryName").value;
+      if(value) {
+        this.CatagoryForm.get("Description").setValue(value.toLocaleUpperCase());
+      }
 
       this.http.post("master/AddOrUpdateCatagory", this.CatagoryForm.value).then(response => {
         if(response.responseBody) {
-          if(response.responseBody == "Insert Or update successfull.")
-            this.common.ShowToast(response.responseBody);
+          if(response.responseBody == "Success")
+            Toast(Inserted);
         }
       });
     }

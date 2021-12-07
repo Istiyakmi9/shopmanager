@@ -1,1 +1,29 @@
 
+.table td {
+    padding: 0px !important;
+  }
+  
+  .table span,
+  input {
+    padding: 0px 0px 0px 8px !important;
+    display: block;
+    width: 100% !important;
+  }
+  
+  .pagination a {
+    cursor: pointer;
+  }
+  
+  .w-10 {
+    width: 10% !important;
+  }
+  
+  .table th {
+    padding: 6px 0px 6px 8px !important;
+  }
+  
+  .table td,
+  th {
+    border: 1px solid #d9d9d9;
+  }
+  

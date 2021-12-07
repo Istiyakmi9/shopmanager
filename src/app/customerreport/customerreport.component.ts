@@ -1,11 +1,10 @@
 import { ITable } from "./../../providers/Generic/Interface/ITable";
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { AjaxService } from "src/providers/ajax.service";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, GetReportData, SearchRequest } from "../../providers/common-service/common.service";
 import * as $ from "jquery";
 import { iNavigation } from "src/providers/iNavigation";
-import { Customer, CustomerColumn } from "src/providers/constants";
-import { MatDialog } from "@angular/material/dialog";
+import { Customer, Product } from "src/providers/constants";
 
 @Component({
   selector: "app-customerreport",
@@ -13,43 +12,64 @@ import { MatDialog } from "@angular/material/dialog";
   styleUrls: ["./customerreport.component.scss"]
 })
 export class CustomerreportComponent implements OnInit {
-  DynamicTableDetail: ITable;
   Record: any = [];
   TotalCount: any = 0;
   Pagination: [];
   CurrentPageIndex: any;
-  animal: string;
-  name: string;
+  searchRequest: SearchRequest;
+  GridData: ITable;
+
   constructor(
-    private http: AjaxService,
     private commonService: CommonService,
-    private nav: iNavigation,
-    public dialog: MatDialog
-  ) {
-    this.LoadPage("1=1", "", 1, 10);
+    private http: AjaxService,
+    private nav: iNavigation
+  ) {}
+
+  ngOnInit() {
+    this.searchRequest = new SearchRequest();
+    this.searchRequest.SearchString = "1=1";
+    this.LoadPage();
   }
 
-  ngOnInit() {}
-
-  LoadPage(
-    searchStr: string,
-    sortBy: string,
-    pageIndex: any,
-    pageSize: any
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      $("#hdnsearchstr").val(searchStr);
-      $("#hdnsortBy").val(sortBy);
-      $("#hdnpageSize").val(pageSize);
-      $("#hdnpageIndex").val(pageIndex);
-      pageIndex = pageIndex - 1;
-      this.DynamicTableDetail = {
-        rows: CustomerColumn,
-        url: "Registration/CustomerReport",
-        SearchStr: searchStr,
-        SortBy: sortBy,
-        editUrl: Customer
-      };
+  LoadPage() {
+    this.http.post("registration/GetCustomers", this.searchRequest ).then(response => {
+      if(response.responseBody) {
+        let data = GetReportData(response.responseBody, this.searchRequest);
+        if(data)
+          this.GridData = data;
+      }
     });
+  }
+
+  ValidateMoney(e: any) {
+    if (e.key == ".") {
+      if (
+        $(event.currentTarget)
+          .val()
+          .indexOf(".") != -1
+      ) {
+        event.preventDefault();
+      }
+    } else if (!this.commonService.IsNumeric(e.key)) {
+      event.preventDefault();
+    }
+  }
+
+  AllowNumberOnly(e: any) {
+    if (!this.commonService.IsNumeric(e.key)) {
+      event.preventDefault();
+    }
+  }
+
+  OnEdit(e: any) {
+    this.nav.navigate(Customer, e);    
+  }
+
+  GetNextPage(e: any) {
+
+  }
+  
+  GetPreviousPage(e: any) {
+
   }
 }

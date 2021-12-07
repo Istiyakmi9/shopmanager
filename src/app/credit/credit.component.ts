@@ -26,7 +26,6 @@ export class CreditComponent implements OnInit {
   // SearchString: string;
   // SortBy: string;
   // Url: string;
-  DynamicTableDetail: ITable;
   CurrentEditRow: any;
   constructor(
     private local: ApplicationStorage,
@@ -40,12 +39,7 @@ export class CreditComponent implements OnInit {
   }
 
   BindDynamicTableDetail() {
-    this.DynamicTableDetail = {
-      rows: CreditColumn,
-      url: "GetSoldItemsByFilter",
-      SearchStr: "1=1",
-      SortBy: "ItemUid"
-    };
+ 
   }
 
   FilterPageData(data: any) {}

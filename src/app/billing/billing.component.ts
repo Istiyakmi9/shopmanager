@@ -1,12 +1,12 @@
 import { iNavigation } from "src/providers/iNavigation";
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, SearchRequest } from "../../providers/common-service/common.service";
 import { AjaxService } from "../../providers/ajax.service";
 import * as $ from "jquery";
 import { PageCache } from "src/providers/PageCache";
 import { BillingPage } from "../../providers/constants";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
-import { NgForm, FormGroup, FormBuilder, FormArray } from "@angular/forms";
+import { NgForm, FormGroup, FormBuilder, FormArray, FormControl } from "@angular/forms";
 
 const MasterPageDetail = "MasterDetail";
 @Component({
@@ -15,14 +15,13 @@ const MasterPageDetail = "MasterDetail";
   styleUrls: ["./billing.component.scss"]
 })
 export class BillingComponent implements OnInit {
-  @ViewChild("form") FormCustomerDetail: NgForm;
   StockObject: any = null;
   DynamicTableDetail: any;
   PageCachingData: any;
-  StockBindingData: any = {
-    data: [],
-    placeholder: "No data available"
-  };
+  StockBindingData: Array<any> = [{
+    text: "Select Item",
+    value: -1
+  }];
   FilteredData: any;
   $Qnty: any;
   IGST: any;
@@ -34,17 +33,24 @@ export class BillingComponent implements OnInit {
   LastKey: string = "";
   GrandAmount: number = 0.0;
   IsNewCustomer: boolean = false;
-  CustomerDetail: any = {
-    data: [],
-    placeholder: "No data available"
-  };
-  CustomerAadharDetail: any = {};
-  CustomerShopDetail: any = {};
-  AllowedKey = [8, 46, 9];
+  CustomerDetail: Array<any> = [{
+    text: "Select Customer",
+    value: -1
+  }];
+  CustomerAadharDetail: Array<any> = [{
+    text: "Customer by aadhar",
+    value: -1
+  }];;
+  CustomerShopDetail: Array<any> = [{
+    text: "Customer by shop detail",
+    value: -1
+  }];;
+  AllowedKey = [8, 9, 32, 46, 42, 43, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 187, 189, 56, 191];
+  AllowedArthematicKey = ['*', '/', '+', '-'];
   ItemRows: any = [];
   Type: any = "no-style";
-  BillingFormGroup: any;
-  FieldClass: string = "noStyle";
+  BillingFormGroup: FormGroup;
+  FieldClass: string = "grid-rows";
   IsValiidQuantity: boolean = false;
   FinalQuantity: number = 0;
   IsDeleted: boolean = false;
@@ -57,6 +63,9 @@ export class BillingComponent implements OnInit {
   PaidAmount: any;
   DueAmount: any;
   Grid: any;
+
+  stockData: Array<any> = [];
+
   constructor(
     private commonService: CommonService,
     private http: AjaxService,
@@ -66,6 +75,23 @@ export class BillingComponent implements OnInit {
     private nav: iNavigation
   ) {
     this.AutoFillDropdownMode = "on";
+    this.BillingFormGroup = this.fb.group({
+      VendorUid: new FormControl(""),
+      Address: new FormControl(""),
+      AadaharNo: new FormControl(""),
+      GSTNo: new FormControl(""),
+      Mobile: new FormControl(""),
+      FullName: new FormControl(""),
+      billingRows: this.InitBillingRows(10)
+    });
+  }
+
+  get billingRows(): FormArray {
+    let data = this.BillingFormGroup.get("billingRows") as FormArray;
+    return data;
+  }
+
+  ngOnInit() {
     this.ReLoadMasterData();
   }
 
@@ -76,41 +102,43 @@ export class BillingComponent implements OnInit {
 
   ReLoadMasterData() {
     this.IsDataReady = true;
-    this.http.get("Master/PageMasterData").then(
+    let data: SearchRequest = new SearchRequest();
+    data.SearchString = "1=1";
+    this.http.post("itemandgoods/GetStocks", data).then(
       response => {
-        this.cache.clear();
-        this.storage.set(response);
-        this.loadInitData();
-        let index = 0;
-        while (index < 50) {
-          this.ItemRows.push(index + 1);
-          index++;
+        if(response.responseBody) {
+          this.stockData = response.responseBody.rows;
+          if(this.stockData) {
+            this.StockBindingData = [{
+              value: 0,
+              text: "Stock Item"
+            }];
+            let index = 0;
+            while(index < this.stockData.length) {
+              this.StockBindingData.push({ 
+                value: this.stockData[index]["StockUid"], 
+                text: this.stockData[index]["ItemName"] 
+              });
+              index++;
+            }
+          }
         }
-        this.PageCachingData = this.cache.get("Stocks");
-        if (this.commonService.IsValid(this.PageCachingData)) {
-          this.PrepareDropdownData();
-        } else {
-          this.IsDataReady = false;
-          this.commonService.ShowToast(
-            "No item added. Please go to setting and add product.",
-            10
-          );
-        }
+        
+        this.loadInitData(response.responseBody["customers"]);
         this.GetTaxDetail();
+        this.IsDataReady = true;
       },
       error => {
         this.commonService.ShowToast(
           "Unable to get master data. Your session is expired."
         );
-        this.nav.navigate("/", null);
       }
     );
   }
 
   AddMoreRows() {
-    // let Controls = <FormArray>this.BillingFormGroup.controls["billingRows"];
-    // Controls.push(this.GetRow());
-    this.BillingFormGroup.push(this.GetRow());
+    let BillingRow = this.BillingFormGroup.get("billingRows") as FormArray;
+    BillingRow.push(this.GetRow());
   }
 
   DeleteRow() {
@@ -121,99 +149,42 @@ export class BillingComponent implements OnInit {
     alert("edit");
   }
 
-  GetRow() {
-    // return this.fb.group({
-    //   Quantity: [""],
-    //   Price: [""],
-    //   IGSTTax: [""],
-    //   SGSTTax: [""],
-    //   CGSTTax: [""],
-    //   TotalPrice: [""]
-    // });
-
-    return {
-      Quantity: [""],
-      Price: [""],
-      IGSTTax: [""],
-      SGSTTax: [""],
-      CGSTTax: [""],
-      TotalPrice: [""]
-    };
+  GetRow(): FormGroup {
+    let Row: FormGroup = this.fb.group({
+      Quantity: new FormControl(""),
+      Price: new FormControl(""),
+      IGSTTax: new FormControl(""),
+      SGSTTax: new FormControl(""),
+      CGSTTax: new FormControl(""),
+      Description: new FormControl(""),
+      Product: new FormControl({ text: "Select Item", value: -1 }),
+      TotalPrice: new FormControl("")
+    });    
+    return Row;
   }
 
-  InitBillingRows(RowCount: number): Array<any> {
+  InitBillingRows(RowCount: number): FormArray {
     let Row = [];
     let index = 0;
     while (index < RowCount) {
       Row.push(this.GetRow());
       index++;
     }
-    return Row;
+    return this.fb.array(Row);
   }
 
-  ngOnInit() {}
-
-  loadInitData() {
-    // this.BillingFormGroup = this.fb.group({
-    //   billingRows: this.fb.array(this.InitBillingRows())
-    // });
-
-    this.BillingFormGroup = this.InitBillingRows(10);
-    //this.HandleAutoClose();
-    let Data = this.storage.get("master", "Customer");
-    if (this.commonService.IsValid(Data)) {
-      let NamedData = [];
+  loadInitData(customers: Array<any>) {
+    if(customers) {
       let index = 0;
-      while (index < Data.length) {
-        if (
-          Data[index]["FirstName"] !== null &&
-          Data[index]["FirstName"] !== ""
-        ) {
-          NamedData.push({
-            value: Data[index]["FirstName"] + " " + Data[index]["LastName"],
-            data: Data[index]["CustomerUid"]
-          });
-        }
-        index++;
+      while(index < customers.length) {
+        this.CustomerDetail = [{
+          text: `${customers[index].FirstName} ${customers[index].LastName}`,
+          value: customers[index].CustomerUid
+        }];
+        index++
       }
-      this.CustomerDetail["data"] = NamedData;
-
-      let DataByMobile = [];
-      index = 0;
-      while (index < Data.length) {
-        if (
-          Data[index]["ShopName"] !== null &&
-          Data[index]["ShopName"] !== ""
-        ) {
-          DataByMobile.push({
-            value: Data[index]["MobileNo"],
-            data: Data[index]["CustomerUid"]
-          });
-        }
-        index++;
-      }
-      this.CustomerAadharDetail["data"] = DataByMobile;
-
-      let DataByShopName = [];
-      index = 0;
-      while (index < Data.length) {
-        if (
-          Data[index]["ShopName"] !== null &&
-          Data[index]["ShopName"] !== ""
-        ) {
-          DataByShopName.push({
-            value: Data[index]["ShopName"],
-            data: Data[index]["CustomerUid"]
-          });
-        }
-        index++;
-      }
-      this.CustomerShopDetail["data"] = DataByShopName;
     }
 
-    this.CustomerDetail["placeholder"] = "Customer Name";
-    this.CustomerAadharDetail["placeholder"] = "Customer By Aadhar no.#";
-    this.CustomerShopDetail["placeholder"] = "Customer By Shop Name";
     this.IsDataReady = true;
     setTimeout(() => {
       this.Grid = $("#billing-body");
@@ -243,10 +214,10 @@ export class BillingComponent implements OnInit {
       data => {
         this.storage.clear();
         this.storage.set(data);
-        this.StockBindingData = {
-          data: [],
-          placeholder: ""
-        };
+        // this.StockBindingData = {
+        //   data: [],
+        //   placeholder: ""
+        // };
         let BindingData = [];
         let index = 0;
         while (index < this.PageCachingData.length) {
@@ -263,7 +234,7 @@ export class BillingComponent implements OnInit {
           });
           index++;
         }
-        this.StockBindingData["data"] = BindingData;
+        //this.StockBindingData["data"] = BindingData;
       },
       error => {
         this.commonService.ShowToast("Unable to fetch Master Data");
@@ -324,146 +295,6 @@ export class BillingComponent implements OnInit {
     }
   }
 
-  VerifyInput(e: any) {
-    if (!this.commonService.IsNumeric(e.key)) {
-      this.IsValiidQuantity = false;
-      this.IsDeleted = false;
-      if (this.AllowedKey.indexOf(e.which) !== -1) {
-        if (e.which === 8 || e.which === 46) {
-          this.IsValiidQuantity = true;
-          this.IsDeleted = true;
-        }
-      } else {
-        event.preventDefault();
-      }
-    } else {
-      try {
-        let TotalQuantity = parseInt($(event.currentTarget).val() + e.key);
-        let CurrentAvailableQuantity = this.GetCurrentItemQuantity();
-        if (TotalQuantity <= CurrentAvailableQuantity) {
-          this.IsDeleted = true;
-          if (e.which !== 8 && e.which !== 46) this.IsDeleted = false;
-          this.IsValiidQuantity = true;
-        } else {
-          this.IsValiidQuantity = false;
-          this.commonService.ShowToast(
-            "Your requested quantity is more than the available quantity."
-          );
-          event.preventDefault();
-        }
-      } catch (e) {
-        console.log("Getting error for ParseInt() in VerifyInput");
-        this.IsValiidQuantity = false;
-        event.stopImmediatePropagation();
-        event.preventDefault();
-      }
-    }
-  }
-
-  VerifyDescriptionInput(e: any) {
-    if (!this.commonService.IsNumeric(e.key)) {
-      this.IsValiidQuantity = false;
-      this.IsDeleted = false;
-      if (this.AllowedKey.indexOf(e.which) !== -1) {
-        if ($(event.currentTarget).val() !== "") {
-          if (this.LastKey === "*" || this.LastKey === "+") {
-            this.LastKey = "";
-          }
-          let LeftItem = $(event.currentTarget)
-            .val()
-            .substr(0, $(event.currentTarget).val().length - 1);
-        }
-        if (e.which === 8 || e.which === 46) {
-          this.IsValiidQuantity = true;
-          this.IsDeleted = true;
-        }
-      }
-    } else {
-      try {
-        let TotalQuantity = parseInt($(event.currentTarget).val() + e.key);
-        let CurrentAvailableQuantity = this.GetCurrentItemQuantity();
-        if (TotalQuantity <= CurrentAvailableQuantity) {
-          this.IsDeleted = true;
-          if (e.which !== 8 && e.which !== 46) this.IsDeleted = false;
-          this.IsValiidQuantity = true;
-        } else {
-          this.IsValiidQuantity = false;
-          this.commonService.ShowToast(
-            "Your requested quantity is more than the available quantity."
-          );
-          event.preventDefault();
-        }
-      } catch (e) {
-        console.log("Getting error for ParseInt() in VerifyInput");
-        this.IsValiidQuantity = false;
-        event.stopImmediatePropagation();
-        event.preventDefault();
-      }
-    }
-  }
-
-  HandleDescription(e: any) {
-    let value = "";
-    let ActualAmount: number = 0;
-    event.preventDefault();
-    if (e.which < 58) {
-      if (e.which === 32 || e.which === 43) {
-        value = "+";
-        if (this.LastKey === "*" || this.LastKey === "+") {
-          event.preventDefault();
-          return false;
-        }
-        this.LastKey = "+";
-      } else if (e.which === 42 || e.which === 46) {
-        value = "*";
-        if (this.LastKey === "*" || this.LastKey === "+") {
-          event.preventDefault();
-          return false;
-        }
-        this.LastKey = "*";
-      }
-
-      if (value !== "") {
-        if (
-          $(event.currentTarget)
-            .val()
-            .trim().length > 0
-        ) {
-          this.DescriptValue = $(event.currentTarget).val() + value;
-        } else {
-          event.preventDefault();
-          return false;
-        }
-      } else if (e.which % 48 >= 0 && e.which % 48 <= 9) {
-        this.LastKey = e.key;
-        this.DescriptValue = $(event.currentTarget).val() + e.key;
-        ActualAmount = this.CalculateDescription(this.DescriptValue);
-      }
-
-      $(event.currentTarget).val(this.DescriptValue);
-      if (
-        ActualAmount !== 0 &&
-        this.DescriptValue !== null &&
-        this.DescriptValue !== ""
-      ) {
-        this.IsValiidQuantity = true;
-        this.CalculateRate();
-      }
-    }
-    return true;
-  }
-
-  ManageDescription(e: any) {
-    if (e.which === 8 || e.which === 46) {
-      let ActualAmount: number = 0;
-      if (this.LastKey === "*" || this.LastKey === "+") {
-        this.LastKey = "";
-      }
-      ActualAmount = this.CalculateDescription($(event.currentTarget).val());
-      this.CalculateRate();
-    }
-  }
-
   GetCurrentItemQuantity(): number {
     let AvailabeItems: number = -1;
     let CurrentAvailableQuantity = this.CurrentEventTag.attr("qt");
@@ -478,39 +309,6 @@ export class BillingComponent implements OnInit {
       }
     }
     return AvailabeItems;
-  }
-
-  CalculateRate() {
-    let CurrentAvailableQuantity: number = this.GetCurrentItemQuantity();
-    if (CurrentAvailableQuantity !== -1) {
-      try {
-        if (this.IsValiidQuantity && this.FinalQuantity >= 0) {
-          if (
-            this.CurrentQuantityTag != null &&
-            this.CurrentQuantityTag.val() !== ""
-          ) {
-            try {
-              this.FinalQuantity = parseInt(this.CurrentQuantityTag.val());
-              this.DeepCalculation(CurrentAvailableQuantity);
-            } catch (e) {
-              this.commonService.ShowToast(
-                "CalculateRate(): parseInt() throws error."
-              );
-            }
-          } else {
-            this.FinalQuantity = 0;
-            this.DeepCalculation(CurrentAvailableQuantity);
-            event.preventDefault();
-          }
-        }
-      } catch (e) {
-        this.commonService.ShowToast(
-          "Available quantity is not enough. Please select item properly."
-        );
-      }
-    } else {
-      this.commonService.ShowToast("Invalid available quantity.");
-    }
   }
 
   DeepCalculation(TotalQuantityAvailable: number) {
@@ -678,24 +476,6 @@ export class BillingComponent implements OnInit {
     let Uid = Record["data"]["uid"];
     this.GetGstDetail(Uid);
     this.InitOtherFileds(Text, Uid);
-  }
-
-  PrepareBinding() {
-    this.CurrentEventTag = $(event.currentTarget).closest("tr");
-    this.CurrentQuantityTag = this.CurrentEventTag.find(
-      'input[name="QuantityField"]'
-    );
-    this.$Qnty = $(event.currentTarget)
-      .closest("tr")
-      .find('div[name="quantity"]')
-      .find('input[type="text"]');
-  }
-
-  EnableCurrentRow() {
-    this.CurrentEventTag = $(event.currentTarget).closest("tr");
-    this.CurrentQuantityTag = this.CurrentEventTag.find(
-      'input[name="QuantityField"]'
-    );
   }
 
   HandleAutofillData($event: any) {
@@ -1171,5 +951,267 @@ export class BillingComponent implements OnInit {
       ActualValue = 0;
     }
     return ActualValue;
+  }
+
+  BindStockData(e: any) {
+    if(e) {
+      let currentItem = this.stockData.find(x=>x.StockUid == e.value);
+      if(currentItem) {
+        
+      }
+    }
+  }
+
+  AllowDescription(e: any) {
+    if(this.AllowedKey.indexOf(e.which) == -1) {
+      e.preventDefault();
+    }
+  }
+
+  VerifyDescription(e: any) {
+    let value = e.target.value + e.key;
+    if(this.AllowedArthematicKey.indexOf(value) != -1) {
+      e.preventDefault();
+    } else {
+
+    }
+    // if (e.which < 58) {
+    //   if (e.which === 32 || e.which === 43) {
+    //     value = "+";
+    //     if (this.LastKey === "*" || this.LastKey === "+") {
+    //       event.preventDefault();
+    //       return false;
+    //     }
+    //     this.LastKey = "+";
+    //   } else if (e.which === 42 || e.which === 46) {
+    //     value = "*";
+    //     if (this.LastKey === "*" || this.LastKey === "+") {
+    //       event.preventDefault();
+    //       return false;
+    //     }
+    //     this.LastKey = "*";
+    //   }
+
+    //   if (value !== "") {
+    //     if (
+    //       $(event.currentTarget)
+    //         .val()
+    //         .trim().length > 0
+    //     ) {
+    //       this.DescriptValue = $(event.currentTarget).val() + value;
+    //     } else {
+    //       event.preventDefault();
+    //       return false;
+    //     }
+    //   } else if (e.which % 48 >= 0 && e.which % 48 <= 9) {
+    //     this.LastKey = e.key;
+    //     this.DescriptValue = $(event.currentTarget).val() + e.key;
+    //     ActualAmount = this.CalculateDescription(this.DescriptValue);
+    //   }
+
+    //   $(event.currentTarget).val(this.DescriptValue);
+    //   if (
+    //     ActualAmount !== 0 &&
+    //     this.DescriptValue !== null &&
+    //     this.DescriptValue !== ""
+    //   ) {
+    //     this.IsValiidQuantity = true;
+    //     this.CalculateRate();
+    //   }
+    // }
+    return true;
+  }
+
+  // --------------------------------------------------------   OLD CODE -------------------------------------
+
+  VerifyDescriptionInput(e: any) {
+    if (!this.commonService.IsNumeric(e.key)) {
+      this.IsValiidQuantity = false;
+      this.IsDeleted = false;
+      if (this.AllowedKey.indexOf(e.which) !== -1) {
+        if ($(event.currentTarget).val() !== "") {
+          if (this.LastKey === "*" || this.LastKey === "+") {
+            this.LastKey = "";
+          }
+          let LeftItem = $(event.currentTarget)
+            .val()
+            .substr(0, $(event.currentTarget).val().length - 1);
+        }
+        if (e.which === 8 || e.which === 46) {
+          this.IsValiidQuantity = true;
+          this.IsDeleted = true;
+        }
+      }
+    } else {
+      try {
+        let TotalQuantity = parseInt($(event.currentTarget).val() + e.key);
+        let CurrentAvailableQuantity = this.GetCurrentItemQuantity();
+        if (TotalQuantity <= CurrentAvailableQuantity) {
+          this.IsDeleted = true;
+          if (e.which !== 8 && e.which !== 46) this.IsDeleted = false;
+          this.IsValiidQuantity = true;
+        } else {
+          this.IsValiidQuantity = false;
+          this.commonService.ShowToast(
+            "Your requested quantity is more than the available quantity."
+          );
+          event.preventDefault();
+        }
+      } catch (e) {
+        console.log("Getting error for ParseInt() in VerifyInput");
+        this.IsValiidQuantity = false;
+        event.stopImmediatePropagation();
+        event.preventDefault();
+      }
+    }
+  }
+
+  HandleDescription(e: any) {
+    let value = "";
+    let ActualAmount: number = 0;
+    event.preventDefault();
+    if (e.which < 58) {
+      if (e.which === 32 || e.which === 43) {
+        value = "+";
+        if (this.LastKey === "*" || this.LastKey === "+") {
+          event.preventDefault();
+          return false;
+        }
+        this.LastKey = "+";
+      } else if (e.which === 42 || e.which === 46) {
+        value = "*";
+        if (this.LastKey === "*" || this.LastKey === "+") {
+          event.preventDefault();
+          return false;
+        }
+        this.LastKey = "*";
+      }
+
+      if (value !== "") {
+        if (
+          $(event.currentTarget)
+            .val()
+            .trim().length > 0
+        ) {
+          this.DescriptValue = $(event.currentTarget).val() + value;
+        } else {
+          event.preventDefault();
+          return false;
+        }
+      } else if (e.which % 48 >= 0 && e.which % 48 <= 9) {
+        this.LastKey = e.key;
+        this.DescriptValue = $(event.currentTarget).val() + e.key;
+        ActualAmount = this.CalculateDescription(this.DescriptValue);
+      }
+
+      $(event.currentTarget).val(this.DescriptValue);
+      if (
+        ActualAmount !== 0 &&
+        this.DescriptValue !== null &&
+        this.DescriptValue !== ""
+      ) {
+        this.IsValiidQuantity = true;
+        this.CalculateRate();
+      }
+    }
+    return true;
+  }
+
+  ManageDescription(e: any) {
+    if (e.which === 8 || e.which === 46) {
+      let ActualAmount: number = 0;
+      if (this.LastKey === "*" || this.LastKey === "+") {
+        this.LastKey = "";
+      }
+      ActualAmount = this.CalculateDescription($(event.currentTarget).val());
+      this.CalculateRate();
+    }
+  }
+
+  // PrepareBinding() {
+  //   this.CurrentEventTag = $(event.currentTarget).closest("tr");
+  //   this.CurrentQuantityTag = this.CurrentEventTag.find(
+  //     'input[name="QuantityField"]'
+  //   );
+  //   this.$Qnty = $(event.currentTarget)
+  //     .closest("tr")
+  //     .find('div[name="quantity"]')
+  //     .find('input[type="text"]');
+  // }
+
+  CalculateRate() {
+    let CurrentAvailableQuantity: number = this.GetCurrentItemQuantity();
+    if (CurrentAvailableQuantity !== -1) {
+      try {
+        if (this.IsValiidQuantity && this.FinalQuantity >= 0) {
+          if (
+            this.CurrentQuantityTag != null &&
+            this.CurrentQuantityTag.val() !== ""
+          ) {
+            try {
+              this.FinalQuantity = parseInt(this.CurrentQuantityTag.val());
+              this.DeepCalculation(CurrentAvailableQuantity);
+            } catch (e) {
+              this.commonService.ShowToast(
+                "CalculateRate(): parseInt() throws error."
+              );
+            }
+          } else {
+            this.FinalQuantity = 0;
+            this.DeepCalculation(CurrentAvailableQuantity);
+            event.preventDefault();
+          }
+        }
+      } catch (e) {
+        this.commonService.ShowToast(
+          "Available quantity is not enough. Please select item properly."
+        );
+      }
+    } else {
+      this.commonService.ShowToast("Invalid available quantity.");
+    }
+  }
+
+  // EnableCurrentRow() {
+  //   this.CurrentEventTag = $(event.currentTarget).closest("tr");
+  //   this.CurrentQuantityTag = this.CurrentEventTag.find(
+  //     'input[name="QuantityField"]'
+  //   );
+  // }
+
+  VerifyInput(e: any) {
+    if (!this.commonService.IsNumeric(e.key)) {
+      this.IsValiidQuantity = false;
+      this.IsDeleted = false;
+      if (this.AllowedKey.indexOf(e.which) !== -1) {
+        if (e.which === 8 || e.which === 46) {
+          this.IsValiidQuantity = true;
+          this.IsDeleted = true;
+        }
+      } else {
+        event.preventDefault();
+      }
+    } else {
+      try {
+        let TotalQuantity = parseInt($(event.currentTarget).val() + e.key);
+        let CurrentAvailableQuantity = this.GetCurrentItemQuantity();
+        if (TotalQuantity <= CurrentAvailableQuantity) {
+          this.IsDeleted = true;
+          if (e.which !== 8 && e.which !== 46) this.IsDeleted = false;
+          this.IsValiidQuantity = true;
+        } else {
+          this.IsValiidQuantity = false;
+          this.commonService.ShowToast(
+            "Your requested quantity is more than the available quantity."
+          );
+          event.preventDefault();
+        }
+      } catch (e) {
+        console.log("Getting error for ParseInt() in VerifyInput");
+        this.IsValiidQuantity = false;
+        event.stopImmediatePropagation();
+        event.preventDefault();
+      }
+    }
   }
 }

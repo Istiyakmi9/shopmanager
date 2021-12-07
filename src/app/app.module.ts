@@ -53,6 +53,8 @@ import {MatTabsModule} from '@angular/material/tabs';
 import { UpperCaseDirective } from "src/directives/upper";
 import { NgbDateParserFormatter, NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgbDateFormatter } from "src/providers/NgbDateFormatter";
+import { DynamicGridComponent } from "./dynamic-grid/dynamic-grid.component";
+import { DefaultValuePipe } from "src/pipes/DefaultValuePipe";
 
 @NgModule({
   declarations: [
@@ -86,7 +88,9 @@ import { NgbDateFormatter } from "src/providers/NgbDateFormatter";
     PurchaseitemsComponent,
     FloatOnlyDirective,
     NumberOnlyDirective,
-    UpperCaseDirective    
+    UpperCaseDirective,
+    DynamicGridComponent,
+    DefaultValuePipe
   ],
   imports: [
     BrowserModule,

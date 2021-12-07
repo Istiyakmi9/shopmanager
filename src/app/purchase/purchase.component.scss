@@ -272,3 +272,23 @@ div#myTabContent {
 .container-100>* {
   width: 100%;
 }
+
+.tax-class {
+  position: absolute;
+  z-index: 999;
+  font-size: .6rem;
+  right: 0;
+  top: -10px;
+  background: white;
+  padding: 0px 3px 0px 3px;
+}
+
+.info-text {
+  position: absolute;
+  z-index: 999;
+  font-size: 0.6rem;
+  right: 4px;
+  background: white;
+  bottom: 2px;
+  color: #b9a8a8;
+}

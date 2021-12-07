@@ -1,10 +1,10 @@
 import { ITable } from "./../../providers/Generic/Interface/ITable";
 import { Component, OnInit } from "@angular/core";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, GetReportData, SearchRequest } from "../../providers/common-service/common.service";
 import { AjaxService } from "src/providers/ajax.service";
 import * as $ from "jquery";
-import { Router } from "@angular/router";
-import { CatagoryReportColumn } from "src/providers/constants";
+import { Product } from "src/providers/constants";
+import { iNavigation } from "src/providers/iNavigation";
 
 @Component({
   selector: "app-catagoryreport",
@@ -12,47 +12,32 @@ import { CatagoryReportColumn } from "src/providers/constants";
   styleUrls: ["./catagoryreport.component.scss"]
 })
 export class CatagoryreportComponent implements OnInit {
-  DynamicTableDetail: ITable;
   Record: any = [];
   TotalCount: any = 0;
   Pagination: [];
   CurrentPageIndex: any;
+  searchRequest: SearchRequest;
+  GridData: ITable;
+
   constructor(
     private commonService: CommonService,
     private http: AjaxService,
-    private route: Router
+    private nav: iNavigation
   ) {}
 
   ngOnInit() {
-    let searchStr = "1=1";
-    let pageIndex = 1;
-    let pageSize = 10;
-    let sortBy = "";
-    $("#hdnsearchstr").val(searchStr);
-    $("#hdnsortBy").val(sortBy);
-    $("#hdnpageSize").val(pageSize);
-    $("#hdnpageIndex").val(pageIndex);
-    this.LoadPage("1=1", "", 1, 10);
+    this.searchRequest = new SearchRequest();
+    this.searchRequest.SearchString = "1=1";
+    this.LoadPage();
   }
 
-  LoadPage(
-    searchStr: string,
-    sortBy: string,
-    pageIndex: any,
-    pageSize: any
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      $("#hdnsearchstr").val(searchStr);
-      $("#hdnsortBy").val(sortBy);
-      $("#hdnpageSize").val(pageSize);
-      $("#hdnpageIndex").val(pageIndex);
-      pageIndex = pageIndex - 1;
-      this.DynamicTableDetail = {
-        rows: CatagoryReportColumn,
-        url: "ItemAndGoods/GetStocksDetailByFilter",
-        SearchStr: searchStr,
-        SortBy: sortBy
-      };
+  LoadPage() {
+    this.http.post("itemandgoods/GetStocks", this.searchRequest ).then(response => {
+      if(response.responseBody) {
+        let data = GetReportData(response.responseBody, this.searchRequest);
+        if(data)
+          this.GridData = data;
+      }
     });
   }
 
@@ -74,5 +59,17 @@ export class CatagoryreportComponent implements OnInit {
     if (!this.commonService.IsNumeric(e.key)) {
       event.preventDefault();
     }
+  }
+
+  OnEdit(e: any) {
+    this.nav.navigate(Product, e);    
+  }
+
+  GetNextPage(e: any) {
+
+  }
+  
+  GetPreviousPage(e: any) {
+
   }
 }

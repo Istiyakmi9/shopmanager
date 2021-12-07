@@ -161,7 +161,6 @@ export class DynamicTableComponent implements OnInit {
         let Uri = this.GetUrl(
           this.pageData.url,
           this.GetGlocalQuery(Key),
-          this.pageData.SortBy,
           "0",
           this.PageSize
         );
@@ -172,7 +171,6 @@ export class DynamicTableComponent implements OnInit {
         let Uri = this.GetUrl(
           this.pageData.url,
           " 1=1 ",
-          this.pageData.SortBy,
           "0",
           this.PageSize
         );
@@ -216,8 +214,7 @@ export class DynamicTableComponent implements OnInit {
     this.FilterQueryResult = "";
     let Uri = this.GetUrl(
       this.pageData.url,
-      this.pageData.SearchStr,
-      this.pageData.SortBy,
+      "1=1",
       "0",
       this.PageSize
     );
@@ -238,7 +235,6 @@ export class DynamicTableComponent implements OnInit {
         let Uri = this.GetUrl(
           this.pageData.url,
           result,
-          this.pageData.SortBy,
           "0",
           this.PageSize
         );
@@ -269,8 +265,7 @@ export class DynamicTableComponent implements OnInit {
     this.CurrentSessionPageSize = PageSize;
     let Uri = this.GetUrl(
       this.pageData.url,
-      this.pageData.SearchStr,
-      this.pageData.SortBy,
+      "1=1",
       PageIndex,
       PageSize
     );
@@ -378,11 +373,10 @@ export class DynamicTableComponent implements OnInit {
   GetUrl(
     Path: string,
     SearchStr: string,
-    SortBy: string,
     PageIndex: string,
     PageSize: string
   ): string {
-    let Uri = `${Path}?SearchStr=${SearchStr}&SortBy=${SortBy}&PageIndex=${PageIndex}&PageSize=${PageSize}`;
+    let Uri = `${Path}?SearchStr=${SearchStr}&SortBy=''&PageIndex=${PageIndex}&PageSize=${PageSize}`;
     return Uri;
   }
 
@@ -411,15 +405,11 @@ export class DynamicTableComponent implements OnInit {
     if (this.commonService.IsValid(this.pageData)) {
       if (
         this.commonService.IsValid(this.pageData.url) &&
-        this.commonService.IsValid(this.pageData.SearchStr) &&
-        this.pageData.SortBy !== undefined &&
-        this.pageData.SortBy !== null
+        this.commonService.IsValid("1=1") !== undefined
       ) {
         let Uri = this.GetUrl(
           this.pageData.url,
-          this.pageData.SearchStr,
-          this.pageData.SortBy,
-          "0",
+          "1=1", "0",
           this.PageSize
         );
         this.LoadPageData(Uri);
@@ -526,7 +516,7 @@ export class DynamicTableComponent implements OnInit {
 
   EditCurrent() {
     this.EditMode = true;
-    let EditPageUrl = this.pageData.editUrl;
+    let EditPageUrl = "";
     switch (this.CurrentPageName) {
       case PurchaseCredit:
         $("#mNewAmount").val("");

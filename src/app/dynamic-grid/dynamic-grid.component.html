@@ -1,0 +1,67 @@
+<div class="col-md-12 p-0">
+  <div id="dynamic-grid-table" class="table-responsive">
+    <table class="table jambo_table bulk_action">
+      <thead>
+        <tr class="headings">
+          <ng-container *ngFor="let col of Headers">
+            <th *ngIf="col.type !== 'hidden'" [ngStyle]="{width: col.width}" class="column-title">{{col.header}}</th>
+          </ng-container>
+          <th class="column-title text-center w-10 no-link last">
+            <span class="nobr">Action</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!IsEmptyRow">
+        <tr *ngFor="let item of GridData;let odd = odd; let even = even; let index = index;"
+          [ngClass]="{odd: odd && IsStriped, even: even }">
+          <ng-container *ngFor="let col of Headers">
+            <td *ngIf="col.type !== 'hidden'" [ngClass]="{'inline-content': isInlineContextClassUsed}">
+              <div [attr.name]="col.column">
+                <span role="view">{{item[col.column] | default:'NA'}}</span>
+                <input role="edit" name="ItemName" type="text" class="d-none" [attr.value]="item[col.column]" />
+              </div>
+            </td>
+          </ng-container>
+          <td class="text-center">
+            <div class="last dyn-last">
+              <input type="hidden" name="currentObject" [attr.value]="item | json" />
+              <div name="editdelete">
+                <a href="javascript:void(0)" id="btnedit" class="a-icon" (click)="EditCurrent()">
+                  <i class="far fa-edit"></i>&nbsp;
+                </a>
+                <a href="javascript:void(0)" id="btndelete" class="a-icon" (click)="DeleteCurrent()">
+                  <i class="far fa-trash-alt"></i>
+                </a>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="IsEmptyRow">
+        <tr>
+          <td [attr.colspan]="TotalHeaders">
+            <div class="empty-row">
+              No record found.
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="50">
+            <div class="text-right mr-2">
+              <div class="d-inline">
+                <span class="plain mr-2">Showing page:</span>
+                <span class="plain"><b>{{ pageIndex }} of {{ TotalPageCount }}</b></span>
+              </div>
+              <div class="d-inline ml-2 font-weight-bold">
+                <a class="pagearrow" [ngClass]="{'disable-btn': DisablePrev}" (click)="PreviousPage()">&#8249;</a>
+                <a class="pagearrow" [ngClass]="{'disable-btn': DisableNext}" (click)="NextPage()">&#8250;</a>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
