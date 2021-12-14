@@ -52,7 +52,8 @@
                         <label>GST IN No.#</label>
                         <div class="form-group row">
                           <div class="col-md-12">
-                            <input type="text" class="form-control" name="GSTNo" formControlName="GSTNo"  placeholder="GST IN no.#" />
+                            <input type="text" class="form-control" name="GSTNo" formControlName="GSTNo"
+                              placeholder="GST IN no.#" />
                           </div>
                         </div>
                       </div>
@@ -60,7 +61,7 @@
                         <label>Aadhar No. #</label>
                         <div class="form-group row">
                           <div class="col-md-12">
-                            <input type="text" class="form-control"  formControlName="AadaharNo" name="AadaharNo"
+                            <input type="text" class="form-control" formControlName="AadaharNo" name="AadaharNo"
                               placeholder="Aadhar no. #" />
                           </div>
                         </div>
@@ -69,8 +70,8 @@
                         <label>Address</label>
                         <div class="form-group row">
                           <div class="col-9 d-inline-block">
-                            <textarea  formControlName="Address" class="form-control" placeholder="Address (optional)" name="Address"
-                              rows="3"></textarea>
+                            <textarea formControlName="Address" class="form-control" placeholder="Address (optional)"
+                              name="Address" rows="3"></textarea>
                           </div>
                         </div>
                       </div>
@@ -83,25 +84,25 @@
                         <div class="form-group col-md-3 pb-0">
                           <label>Customer By name</label>
                           <div class="col-md-12">
-                            <app-iautocomplete [Data]="CustomerDetail" 
-                              [Placeholder]="'Select Customer'" formControlName="VendorUid">                              
+                            <app-iautocomplete [Data]="CustomerDetail" [Placeholder]="'Select Customer'"
+                              formControlName="VendorUid">
                             </app-iautocomplete>
                           </div>
                         </div>
                         <div class="form-group col-md-3 pb-0">
                           <label>Customer By Aadhar No. #</label>
-                            <div class="col-md-12">
-                              <app-iautocomplete [Placeholder]="'Find Your Aadhar No.#'" 
-                                [Data]="CustomerAadharDetail" formControlName="VendorUid">
-                              </app-iautocomplete>
+                          <div class="col-md-12">
+                            <app-iautocomplete [Placeholder]="'Find Your Aadhar No.#'" [Data]="CustomerAadharDetail"
+                              formControlName="VendorUid">
+                            </app-iautocomplete>
                           </div>
                         </div>
                         <div class="form-group col-md-6 pb-0">
                           <label>Customer By Shop Name</label>
-                            <div class="col-md-12">
-                              <app-iautocomplete [Placeholder]="'Select Your Shop Detail'" 
-                                [Data]="CustomerShopDetail" formControlName="VendorUid">
-                              </app-iautocomplete>
+                          <div class="col-md-12">
+                            <app-iautocomplete [Placeholder]="'Select Your Shop Detail'" [Data]="CustomerShopDetail"
+                              formControlName="VendorUid">
+                            </app-iautocomplete>
                           </div>
                         </div>
                       </div>
@@ -144,21 +145,22 @@
                       <td [ngStyle]="{ width: i === 0 ? '25%' : 'auto' }">
                         <div name="parent-select" class="select-autofill-parent">
                           <app-iautocomplete [ClassName]="FieldClass" [Tabindex]="[i * 2 + 1]" formControlName="Product"
-                            [Data]="StockBindingData" [Placeholder]="'Select Item'" (OnSelect)="BindStockData($event)"></app-iautocomplete>
+                            [Data]="StockBindingData" [Placeholder]="'Select Item'" (OnSelect)="BindStockData($event)">
+                          </app-iautocomplete>
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="description">
-                          <input type="text" [tabindex]="[i * 2 + 3]" class="w-75 tbl-input border-0 br-0" name="Description"
-                            (keydown)="AllowDescription($event)" 
-                            (keypress)="VerifyDescription($event)"
-                            class="tbl-input border-0 br-0 bg-white" formControlName="Description"/>
+                          <input type="text" [tabindex]="[i * 2 + 3]" class="w-75 tbl-input border-0 br-0"
+                            name="Description" (keydown)="AllowDescription($event)"
+                            (keypress)="VerifyDescription($event)" class="tbl-input border-0 br-0 bg-white"
+                            formControlName="Description" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="quantity">
                           <input type="text" [tabindex]="[i * 2 + 4]" class="w-75 tbl-input border-0 br-0"
-                            name="Quantity" formControlName="Quantity"/>
+                            name="Quantity" formControlName="Quantity" />
                           <label class="view-lbl">
                             <small initdata="" name="availablequantity"></small>
                           </label>
@@ -166,32 +168,32 @@
                       </td>
                       <td>
                         <div class="m-0 p-0" name="price">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" formControlName="Price" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="igst-col">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" formControlName="IGSTTax" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="sgst-col">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" formControlName="SGSTTax" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="cgst-col">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" formControlName="CGSTTax" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="taxamount">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" />
                         </div>
                       </td>
                       <td>
                         <div class="m-0 p-0" name="grandprice">
-                          <input type="text" class="tbl-input border-0 br-0 bg-white" disabled />
+                          <input type="text" class="tbl-input border-0 br-0 bg-white" formControlName="TotalPrice" />
                         </div>
                       </td>
                     </ng-container>
@@ -214,16 +216,14 @@
                         </div>
                       </label>
                       <div class="float-left w-100 mt-2">
-                        <label class="">Amount Paid:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
+                        <label class="">Amount Paid:&nbsp; (<i class="fas fa-rupee-sign"></i>)</label>
                         <div class="float-right">
-                          <input type="text" class="form-control" (keydown)="AllowMoney($event)" placeholder="Amount paid"
-                            id="paidamount" name="paidamount">
+                          <input type="text" class="form-control" (keydown)="AllowMoney($event)"
+                            placeholder="Amount paid" id="paidamount" name="paidamount">
                         </div>
                       </div>
                       <div class="float-left w-100">
-                        <label class="">Amount Due:&nbsp; (<i
-                            class="fas fa-rupee-sign"></i>)</label>
+                        <label class="">Amount Due:&nbsp; (<i class="fas fa-rupee-sign"></i>)</label>
                         <div class="float-right">
                           <input type="text" class="form-control" disabled placeholder="Amount due" id="dueamount"
                             name="dueamount">

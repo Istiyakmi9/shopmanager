@@ -6,7 +6,7 @@ import * as $ from "jquery";
 import { PageCache } from "src/providers/PageCache";
 import { BillingPage } from "../../providers/constants";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
-import { NgForm, FormGroup, FormBuilder, FormArray, FormControl } from "@angular/forms";
+import { NgForm, FormGroup, FormBuilder, FormArray, FormControl, Validators } from "@angular/forms";
 
 const MasterPageDetail = "MasterDetail";
 @Component({
@@ -106,24 +106,24 @@ export class BillingComponent implements OnInit {
     data.SearchString = "1=1";
     this.http.post("itemandgoods/GetStocks", data).then(
       response => {
-        if(response.responseBody) {
+        if (response.responseBody) {
           this.stockData = response.responseBody.rows;
-          if(this.stockData) {
+          if (this.stockData) {
             this.StockBindingData = [{
               value: 0,
               text: "Stock Item"
             }];
             let index = 0;
-            while(index < this.stockData.length) {
-              this.StockBindingData.push({ 
-                value: this.stockData[index]["StockUid"], 
-                text: this.stockData[index]["ItemName"] 
+            while (index < this.stockData.length) {
+              this.StockBindingData.push({
+                value: this.stockData[index]["StockUid"],
+                text: this.stockData[index]["ItemName"]
               });
               index++;
             }
           }
         }
-        
+
         this.loadInitData(response.responseBody["customers"]);
         this.GetTaxDetail();
         this.IsDataReady = true;
@@ -159,7 +159,7 @@ export class BillingComponent implements OnInit {
       Description: new FormControl(""),
       Product: new FormControl({ text: "Select Item", value: -1 }),
       TotalPrice: new FormControl("")
-    });    
+    });
     return Row;
   }
 
@@ -174,9 +174,9 @@ export class BillingComponent implements OnInit {
   }
 
   loadInitData(customers: Array<any>) {
-    if(customers) {
+    if (customers) {
       let index = 0;
-      while(index < customers.length) {
+      while (index < customers.length) {
         this.CustomerDetail = [{
           text: `${customers[index].FirstName} ${customers[index].LastName}`,
           value: customers[index].CustomerUid
@@ -954,23 +954,23 @@ export class BillingComponent implements OnInit {
   }
 
   BindStockData(e: any) {
-    if(e) {
-      let currentItem = this.stockData.find(x=>x.StockUid == e.value);
-      if(currentItem) {
-        
+    if (e) {
+      let currentItem = this.stockData.find(x => x.StockUid == e.value);
+      if (currentItem) {
+
       }
     }
   }
 
   AllowDescription(e: any) {
-    if(this.AllowedKey.indexOf(e.which) == -1) {
+    if (this.AllowedKey.indexOf(e.which) == -1) {
       e.preventDefault();
     }
   }
 
   VerifyDescription(e: any) {
     let value = e.target.value + e.key;
-    if(this.AllowedArthematicKey.indexOf(value) != -1) {
+    if (this.AllowedArthematicKey.indexOf(value) != -1) {
       e.preventDefault();
     } else {
 

@@ -14,7 +14,7 @@ import {
   FormControl
 } from "@angular/forms";
 
-declare var $:any;
+declare var $: any;
 
 @Component({
   selector: "app-purchase",
@@ -49,8 +49,8 @@ export class PurchaseComponent implements OnInit {
 
   purchaseFormGroup: FormGroup = this.fb.group({});
   NoOfRows: number;
-  
-  
+
+
   itemDetail: FormArray;
   Items: Dictionary<string, number>;
   IsPurchasePage: boolean = false;
@@ -326,23 +326,23 @@ export class PurchaseComponent implements OnInit {
 
   SubmitSoldItems() {
     this.submitted = true;
-    if(this.purchaseFormGroup.valid) {
+    if (this.purchaseFormGroup.valid) {
       alert('Form is valid')
-    //   let OtherDetailData: any = this.purchaseFormGroup.controls["OtherDetail"];
-    //   let GridRowData: any = this.purchaseFormGroup.controls["GridDetail"];
-    //   let CustomerDetailData: any = this.purchaseFormGroup.controls["CustomerDetail"];
-  
-    //   this.http.post("Goods/InsertMultiPurchaseItem", this.purchaseFormGroup.value).then(
-    //     response => {
-    //       if (response.responseBody) {
-    //         Toast(response.responseBody);
-    //       } else {
-    //         Toast("Fail to insert data. Please contact admin.");
-    //       }
-    //     }, error => {
-    //       Toast("Server error. Please contact admin.");
-    //     }
-    //   );
+      //   let OtherDetailData: any = this.purchaseFormGroup.controls["OtherDetail"];
+      //   let GridRowData: any = this.purchaseFormGroup.controls["GridDetail"];
+      //   let CustomerDetailData: any = this.purchaseFormGroup.controls["CustomerDetail"];
+
+      //   this.http.post("Goods/InsertMultiPurchaseItem", this.purchaseFormGroup.value).then(
+      //     response => {
+      //       if (response.responseBody) {
+      //         Toast(response.responseBody);
+      //       } else {
+      //         Toast("Fail to insert data. Please contact admin.");
+      //       }
+      //     }, error => {
+      //       Toast("Server error. Please contact admin.");
+      //     }
+      //   );
     } else {
       Toast("Form is not valid. Please fill all fields properly");
     }
@@ -446,20 +446,20 @@ export class PurchaseComponent implements OnInit {
     data.SearchString = "1=1";
     this.http.post("itemandgoods/GetStocksToAddNew", data).then(
       response => {
-        if(response.responseBody) {
+        if (response.responseBody) {
           this.BindCustomers(response.responseBody["customers"]);
           this.goodsItem = response.responseBody.rows;
-          if(this.goodsItem) {
+          if (this.goodsItem) {
             this.StockBindingData = [{
               value: 0,
               text: "Stock Item"
             }];
             if (this.IsPurchasePage) {
               let index = 0;
-              while(index < this.goodsItem.length) {
-                this.StockBindingData.push({ 
-                  value: this.goodsItem[index]["StockUid"], 
-                  text: this.goodsItem[index]["ItemName"] 
+              while (index < this.goodsItem.length) {
+                this.StockBindingData.push({
+                  value: this.goodsItem[index]["StockUid"],
+                  text: this.goodsItem[index]["ItemName"]
                 });
                 index++;
               }
@@ -467,7 +467,7 @@ export class PurchaseComponent implements OnInit {
 
             }
           }
-        } 
+        }
         this.loadInitData();
         this.IsDataReady = true;
       },
@@ -481,9 +481,9 @@ export class PurchaseComponent implements OnInit {
   }
 
   BindCustomers(customers: Array<any>) {
-    if(customers) {
+    if (customers) {
       let index = 0;
-      while(index < customers.length) {
+      while (index < customers.length) {
         this.CustomerData = [{
           text: `${customers[index].FirstName} ${customers[index].LastName}`,
           value: customers[index].CustomerUid
@@ -519,15 +519,15 @@ export class PurchaseComponent implements OnInit {
   GetBrands() {
     let brands = [];
     let brandsRecords = this.storage.get(null, "brands");
-    if(!brandsRecords)
+    if (!brandsRecords)
       brandsRecords = [{
         text: "No brand",
         value: -1
       }];
     else {
-      
+
       let index = 0;
-      while(index < brandsRecords.length) {
+      while (index < brandsRecords.length) {
         brands.push({ text: brandsRecords[index].BrandName, value: brandsRecords[index].BrandUid });
         index++;
       }
@@ -647,12 +647,12 @@ export class PurchaseComponent implements OnInit {
   }
 
   OnItemSelection(e: any, position: number) {
-    let currentItem = this.goodsItem.find(x=>x.StockUid == e.value);
-    if(currentItem) {
+    let currentItem = this.goodsItem.find(x => x.StockUid == e.value);
+    if (currentItem) {
       this.TotalTax = 0;
       let row: FormGroup = this.purchaseFormGroup.get("GridDetail")["controls"][position];
-      let catagory = this.catagories.find(x=>x.CreatedBy == currentItem.CatagoryUid);
-      if(catagory) {
+      let catagory = this.catagories.find(x => x.CreatedBy == currentItem.CatagoryUid);
+      if (catagory) {
         this.TotalTax = Number(catagory.CGST) + Number(catagory.SGST) + Number(catagory.IGST);
       }
 
@@ -662,20 +662,20 @@ export class PurchaseComponent implements OnInit {
 
       this.Price = Number(currentItem.SellingPrice);
       row.get("Price").setValue(this.Price);
-      
+
       row.get("Quantity").setValue('');
       row.get("AvailableQuantity").setValue(Number(currentItem.AvailableQuantity));
       row.get("Tax").setValue(this.TotalTax);
-      
+
       this.TotalTaxAmount = row.get("TaxAmount") as FormControl;
       this.TotalTaxAmount.setValue(0);
-      
+
       this.TotalAmount = row.get("TotalAmount") as FormControl;
       this.TotalAmount.setValue(0);
 
       this.FinalAmount = row.get("FinalAmount") as FormControl;
       this.FinalAmount.setValue(0);
-      
+
       row.get("ItemName").setValue(e.text);
       row.get("StockUid").setValue(e.value);
       row.get("Discount").setValue(0);
@@ -775,6 +775,6 @@ export class PurchaseComponent implements OnInit {
   }
 
   CalculateTotalAmount() {
-    
+
   }
 }

@@ -1,10 +1,11 @@
 import { ITable } from "./../../providers/Generic/Interface/ITable";
 import { Component, OnInit } from "@angular/core";
 import { AjaxService } from "src/providers/ajax.service";
-import { CommonService } from "../../providers/common-service/common.service";
+import { CommonService, GetReportData, SearchRequest } from "../../providers/common-service/common.service";
 import * as $ from "jquery";
-import { VendorColumn } from "src/providers/constants";
+import { Customer, VendorColumn } from "src/providers/constants";
 import { VendorReport } from "./../../providers/constants";
+import { iNavigation } from "src/providers/iNavigation";
 
 @Component({
   selector: "app-vendorreport",
@@ -13,14 +14,21 @@ import { VendorReport } from "./../../providers/constants";
 })
 export class VendorreportComponent implements OnInit {
   Record: any = [];
+  searchRequest: SearchRequest;
+  GridData: ITable;
   TotalCount: any = 0;
   Pagination: [];
   CurrentPageIndex: any;
-  constructor(private http: AjaxService, private commonService: CommonService) {
+  constructor(private http: AjaxService, private commonService: CommonService,
+    private nav: iNavigation) {
     this.LoadPage("1=1", "", 1, 10);
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.searchRequest = new SearchRequest();
+    this.searchRequest.SearchString = "1=1";
+    this.LoadData();
+  }
 
   LoadPage(
     searchStr: string,
@@ -36,4 +44,47 @@ export class VendorreportComponent implements OnInit {
       pageIndex = pageIndex - 1;
     });
   }
+
+  LoadData() {
+    this.http.post("itemandgoods/GetStocks", this.searchRequest).then(response => {
+      if (response.responseBody) {
+        let data = GetReportData(response.responseBody, this.searchRequest);
+        if (data)
+          this.GridData = data;
+      }
+    });
+  }
+
+  OnEdit(e: any) {
+    this.nav.navigate(Customer, e);
+  }
+
+  GetNextPage(e: any) {
+
+  }
+
+  GetPreviousPage(e: any) {
+
+  }
+
+  alidateMoney(e: any) {
+    if (e.key == ".") {
+      if (
+        $(event.currentTarget)
+          .val()
+          .indexOf(".") != -1
+      ) {
+        event.preventDefault();
+      }
+    } else if (!this.commonService.IsNumeric(e.key)) {
+      event.preventDefault();
+    }
+  }
+
+  AllowNumberOnly(e: any) {
+    if (!this.commonService.IsNumeric(e.key)) {
+      event.preventDefault();
+    }
+  }
+
 }
