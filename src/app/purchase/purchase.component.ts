@@ -1,6 +1,6 @@
 import { Purchases, AddItems, Catagory } from "./../../providers/constants";
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { CommonService, SearchRequest } from "../../providers/common-service/common.service";
+import { CommonService, SearchRequest, Toast } from "../../providers/common-service/common.service";
 import { AjaxService } from "../../providers/ajax.service";
 import { PageCache } from "src/providers/PageCache";
 import { ApplicationStorage } from "src/providers/ApplicationStorage";
@@ -45,6 +45,7 @@ export class PurchaseComponent implements OnInit {
   Grid: any;
   DescriptValue: string = "";
   LastKey: string = "";
+  submitted: boolean = false;
 
   purchaseFormGroup: FormGroup = this.fb.group({});
   NoOfRows: number;
@@ -88,16 +89,22 @@ export class PurchaseComponent implements OnInit {
     return data;
   }
 
+  get CustomerDetail() {
+    let customerGroupData: FormGroup = this.purchaseFormGroup.get("CustomerDetail") as FormGroup;
+    return customerGroupData.controls;
+  }
+
   BindDynamicGrid() {
     this.purchaseFormGroup = this.fb.group({
       OtherDetail: this.fb.group({
         TransportName: new FormControl(""),
         VehicleNo: new FormControl(""),
-        PaidAmount: new FormControl(""),
+        PaidAmount: new FormControl("", Validators.required),
         DueAmount: new FormControl("")
       }),
       CustomerDetail: this.fb.group({
         CustomerUid: new FormControl(""),
+        VendorUid: new FormControl(""),
         ShopName: new FormControl(""),
         BillNo: new FormControl("", Validators.required)
       }),
@@ -139,42 +146,42 @@ export class PurchaseComponent implements OnInit {
     }
   }
 
-  TableValidationCheck() {
-    let $validrows = $("#billtable").find('tr[isvalid="true"]');
-    let ErrorMessagge = "";
-    if ($validrows !== null && $validrows.length > 0) {
-      let index = 0;
-      let $rows: any = null;
-      while (index < $validrows.length) {
-        $rows = $validrows[index];
-        if (
-          $($rows)
-            .find('input[name="Price"]')
-            .val() === ""
-        ) {
-          ErrorMessagge += "Price, ";
-          this.HighlightErrorRow($rows);
-        }
-        if (
-          $($rows)
-            .find('input[name="Quantity"]')
-            .val() === ""
-        ) {
-          ErrorMessagge += "Quantity, ";
-          this.HighlightErrorRow($rows);
-        }
-        index++;
-      }
+  // TableValidationCheck() {
+  //   let $validrows = $("#billtable").find('tr[isvalid="true"]');
+  //   let ErrorMessagge = "";
+  //   if ($validrows !== null && $validrows.length > 0) {
+  //     let index = 0;
+  //     let $rows: any = null;
+  //     while (index < $validrows.length) {
+  //       $rows = $validrows[index];
+  //       if (
+  //         $($rows)
+  //           .find('input[name="Price"]')
+  //           .val() === ""
+  //       ) {
+  //         ErrorMessagge += "Price, ";
+  //         this.HighlightErrorRow($rows);
+  //       }
+  //       if (
+  //         $($rows)
+  //           .find('input[name="Quantity"]')
+  //           .val() === ""
+  //       ) {
+  //         ErrorMessagge += "Quantity, ";
+  //         this.HighlightErrorRow($rows);
+  //       }
+  //       index++;
+  //     }
 
-      if (ErrorMessagge.length > 0) {
-        this.commonService.ShowToast(
-          "Row(s) marked red is invalid. Please check again & submit."
-        );
-      }
-      return !(ErrorMessagge.length > 0);
-    }
-    return 0;
-  }
+  //     if (ErrorMessagge.length > 0) {
+  //       this.commonService.ShowToast(
+  //         "Row(s) marked red is invalid. Please check again & submit."
+  //       );
+  //     }
+  //     return !(ErrorMessagge.length > 0);
+  //   }
+  //   return 0;
+  // }
 
   RefreshPage() {
     let rows = $("#billing-body").find('tr[isvalid="true"]');
@@ -309,254 +316,128 @@ export class PurchaseComponent implements OnInit {
           } else {
             Message = "No entry found. Please fill atleast one row detail.";
           }
-          this.commonService.ShowToast(Message);
+          Toast(Message);
         }
       } else {
-        this.commonService.ShowToast("Please select vendor before submit.");
+        Toast("Please select vendor before submit.");
       }
     }
   }
 
   SubmitSoldItems() {
-    if (this.TableValidationCheck()) {
-      let $table = $("#billing-body");
-      let OtherDetailData: any = this.purchaseFormGroup.controls["OtherDetail"];
-      let GridRowData: any = this.purchaseFormGroup.controls["GridDetail"];
-      let CustomerDetailData: any = this.purchaseFormGroup.controls[
-        "CustomerDetail"
-      ];
-      if (
-        this.commonService.IsValid(GridRowData) &&
-        this.commonService.IsValid(OtherDetailData) &&
-        this.commonService.IsValid(CustomerDetailData)
-      ) {
-        let PurchaseData: any = {};
-        let InValidCells: Array<string> = [];
-
-        let Vendor = this.commonService.ReadAutoCompleteObject(
-          $("#CustomerByName")
-        );
-
-        if (this.commonService.IsValid(Vendor["data"])) {
-          PurchaseData["CustomerUid"] = Vendor["data"];
-        } else {
-          InValidCells.push("CustomerUid");
-        }
-
-        let DueAmount = 0;
-        let DueAmountValue = $("#DueAmount").val();
-        try {
-          DueAmount = parseFloat(DueAmountValue);
-        } catch (e) {
-          console.log("Invalid due amount.");
-        }
-        PurchaseData["DueAmount"] = DueAmount;
-
-        if (OtherDetailData.controls["PaidAmount"].value !== "") {
-          PurchaseData["PaidAmount"] =
-            OtherDetailData.controls["PaidAmount"].value;
-        } else {
-          InValidCells.push("PaidAmount");
-        }
-
-        if (OtherDetailData.controls["TransportName"].value !== "") {
-          PurchaseData["TransportName"] =
-            OtherDetailData.controls["TransportName"].value;
-        } else {
-          InValidCells.push("TransportName");
-        }
-
-        if (OtherDetailData.controls["VehicleNo"].value !== "") {
-          PurchaseData["VehicleNo"] =
-            OtherDetailData.controls["VehicleNo"].value;
-        }
-
-        if (CustomerDetailData.controls["BillNo"].value !== "") {
-          PurchaseData["BillNo"] = CustomerDetailData.controls["BillNo"].value;
-        } else {
-          InValidCells.push("BillNo");
-        }
-
-        let ItemName = "";
-        if (InValidCells.length === 0) {
-          let ItemDetail = [];
-          GridRowData.controls.map((x, index) => {
-            if (x.touched) {
-              let StockDetail = $table
-                .find(
-                  `tr:nth-child(${index + 1}) input[name="currentStockDetail"]`
-                )
-                .val();
-
-              if (
-                this.commonService.IsValid(StockDetail) &&
-                ItemName !== null
-              ) {
-                StockDetail = JSON.parse(StockDetail);
-                let StockDetailData = StockDetail["data"];
-                ItemName = StockDetail.value.split("@[");
-                if (ItemName.length > 1) ItemName = ItemName[0].trim();
-                else ItemName = null;
-                if (ItemName !== null) {
-                  ItemDetail.push({
-                    RowIndex: index + 1,
-                    ItemName: ItemName,
-                    CatagoryUid: StockDetailData.catagoryUid,
-                    BrandName: x.controls["BrandName"].value,
-                    BrandUid: StockDetailData["brandUid"],
-                    StockUid: StockDetailData.stockUid,
-                    SerialNumber: "",
-                    Quantity: $table
-                      .find(`tr:nth-child(${index + 1}) input[name="Quantity"]`)
-                      .val(),
-                    ActualPrice: $table
-                      .find(`tr:nth-child(${index + 1}) input[name="Price"]`)
-                      .val(),
-                    SellingPrice: 0,
-                    MRP: $table
-                      .find(`tr:nth-child(${index + 1}) input[name="Price"]`)
-                      .val(),
-                    Discount: 0,
-                    TaxAmount: $table
-                      .find(
-                        `tr:nth-child(${index + 1}) input[name="TaxAmount"]`
-                      )
-                      .val(),
-                    TotalAmount: $table
-                      .find(
-                        `tr:nth-child(${index + 1}) input[name="TotalAmount"]`
-                      )
-                      .val()
-                  });
-                }
-              }
-            }
-          });
-
-          if (ItemDetail.length > 0) {
-            PurchaseData["purchaseItemDetails"] = ItemDetail;
-            this.http.post("Goods/InsertMultiPurchaseItem", PurchaseData).then(
-              response => {
-                if (
-                  this.commonService.IsValid(response) &&
-                  response === "Committed successfully"
-                ) {
-                  this.commonService.ShowToast("Data added successfully.");
-                  this.RefreshPage();
-                } else {
-                  this.commonService.ShowToast(
-                    "Fail to insert data. Please contact admin."
-                  );
-                }
-              },
-              error => {
-                this.commonService.ShowToast(
-                  "Server error. Please contact admin."
-                );
-              }
-            );
-          }
-        } else {
-          this.commonService.MarkedErrorFields(InValidCells);
-          this.commonService.ShowToast(
-            "Required fields: " +
-              InValidCells.join(", ").replace("CustomerUid", "Customer Name")
-          );
-        }
-      }
-    }
-  }
-
-  ValidateNInsertValue(key: string, index: number): number {
-    let position: number = -1;
-    position = this.Items.hasKey(key);
-    if (position === -1) {
-      position = this.Items.hasValue(index);
-      if (position !== -1) {
-        this.Items.replaceByValue(key, index);
-        position = -1;
-      } else {
-        this.Items.insert(key, index);
-        position = -1;
-      }
-    } else if (position === index) {
-      position = -1;
-    }
-    return position;
-  }
-
-  HandleAutofillData(event: any) {
-    let CurrentRow = $(event.currentTarget).closest("tr");
-    let SelectValues = JSON.parse(event);
-    let position = -1;
-    if (this.IsPurchasePage) {
-      position = this.ValidateNInsertValue(
-        SelectValues.value,
-        parseInt(CurrentRow.attr("index"))
-      );
-    }
-    if (position === -1) {
-      if (event !== null && CurrentRow !== null) {
-        CurrentRow.find('input[name="currentStockDetail"]').val(event);
-        let StockValues = this.storage.get("", "Stocks");
-        let TaxDetail = this.storage.get("", "MasterDetail");
-        if (this.commonService.IsValid(StockValues)) {
-          let FilteredValue = StockValues.filter(
-            (x: any) => x.StockUid === SelectValues.data.stockUid
-          );
-          if (this.commonService.IsValid(FilteredValue)) {
-            this.CurrentItemActualPrice = FilteredValue[0].ActualPrice;
-            CurrentRow.find('input[name="Price"]').val(
-              FilteredValue[0].ActualPrice
-            );
-          }
-        }
-        this.EnableCurrentRow($(event.currentTarget));
-        let GSTDetail = TaxDetail.filter(
-          (x: any) => x.CatagoryUid === SelectValues["data"].catagoryUid
-        );
-        if (GSTDetail.length === 3) {
-          try {
-            let IGSTItem = GSTDetail.filter((x: any) => x.TypeName === "IGST");
-            if (IGSTItem.length > 0) {
-              this.CurrentIGSTTax = IGSTItem[0].TypeValue;
-            }
-            let SGSTItem = GSTDetail.filter((x: any) => x.TypeName === "SGST");
-            if (SGSTItem.length > 0) {
-              this.CurrentSGSTTax = SGSTItem[0].TypeValue;
-            }
-            let CGSTItem = GSTDetail.filter((x: any) => x.TypeName === "CGST");
-            if (CGSTItem.length > 0) {
-              this.CurrentCGSTTax = CGSTItem[0].TypeValue;
-            }
-          } catch (e) {
-            this.commonService.ShowToast(
-              "Invalid data found. Please contact to admin."
-            );
-          }
-        }
-        //let BrandDetail = this.storage.get(null, "Brands");
-      } else {
-        this.commonService.ShowToast(
-          "Selected stock is invalid. Please contact to admin."
-        );
-      }
-      $(event?.currentTarget)
-        .closest("tr")
-        .find('div[name="Quantity"] > input')
-        .focus();
+    this.submitted = true;
+    if(this.purchaseFormGroup.valid) {
+      alert('Form is valid')
+    //   let OtherDetailData: any = this.purchaseFormGroup.controls["OtherDetail"];
+    //   let GridRowData: any = this.purchaseFormGroup.controls["GridDetail"];
+    //   let CustomerDetailData: any = this.purchaseFormGroup.controls["CustomerDetail"];
+  
+    //   this.http.post("Goods/InsertMultiPurchaseItem", this.purchaseFormGroup.value).then(
+    //     response => {
+    //       if (response.responseBody) {
+    //         Toast(response.responseBody);
+    //       } else {
+    //         Toast("Fail to insert data. Please contact admin.");
+    //       }
+    //     }, error => {
+    //       Toast("Server error. Please contact admin.");
+    //     }
+    //   );
     } else {
-      let Row = $(`#billing-body tr:nth-child(${position + 1})`);
-      this.commonService.ShowToast("Item already selected.");
-      this.commonService.ResetDropdown(
-        CurrentRow.find('div[name="autofill-container"]')
-      );
-      this.HighlightErrorRow(Row);
-      setTimeout(() => {
-        this.RemoveErrorHighlight(Row);
-      }, 4000);
+      Toast("Form is not valid. Please fill all fields properly");
     }
   }
+
+  // ValidateNInsertValue(key: string, index: number): number {
+  //   let position: number = -1;
+  //   position = this.Items.hasKey(key);
+  //   if (position === -1) {
+  //     position = this.Items.hasValue(index);
+  //     if (position !== -1) {
+  //       this.Items.replaceByValue(key, index);
+  //       position = -1;
+  //     } else {
+  //       this.Items.insert(key, index);
+  //       position = -1;
+  //     }
+  //   } else if (position === index) {
+  //     position = -1;
+  //   }
+  //   return position;
+  // }
+
+  // HandleAutofillData(event: any) {
+  //   let CurrentRow = $(event.currentTarget).closest("tr");
+  //   let SelectValues = JSON.parse(event);
+  //   let position = -1;
+  //   if (this.IsPurchasePage) {
+  //     position = this.ValidateNInsertValue(
+  //       SelectValues.value,
+  //       parseInt(CurrentRow.attr("index"))
+  //     );
+  //   }
+  //   if (position === -1) {
+  //     if (event !== null && CurrentRow !== null) {
+  //       CurrentRow.find('input[name="currentStockDetail"]').val(event);
+  //       let StockValues = this.storage.get("", "Stocks");
+  //       let TaxDetail = this.storage.get("", "MasterDetail");
+  //       if (this.commonService.IsValid(StockValues)) {
+  //         let FilteredValue = StockValues.filter(
+  //           (x: any) => x.StockUid === SelectValues.data.stockUid
+  //         );
+  //         if (this.commonService.IsValid(FilteredValue)) {
+  //           this.CurrentItemActualPrice = FilteredValue[0].ActualPrice;
+  //           CurrentRow.find('input[name="Price"]').val(
+  //             FilteredValue[0].ActualPrice
+  //           );
+  //         }
+  //       }
+  //       this.EnableCurrentRow($(event.currentTarget));
+  //       let GSTDetail = TaxDetail.filter(
+  //         (x: any) => x.CatagoryUid === SelectValues["data"].catagoryUid
+  //       );
+  //       if (GSTDetail.length === 3) {
+  //         try {
+  //           let IGSTItem = GSTDetail.filter((x: any) => x.TypeName === "IGST");
+  //           if (IGSTItem.length > 0) {
+  //             this.CurrentIGSTTax = IGSTItem[0].TypeValue;
+  //           }
+  //           let SGSTItem = GSTDetail.filter((x: any) => x.TypeName === "SGST");
+  //           if (SGSTItem.length > 0) {
+  //             this.CurrentSGSTTax = SGSTItem[0].TypeValue;
+  //           }
+  //           let CGSTItem = GSTDetail.filter((x: any) => x.TypeName === "CGST");
+  //           if (CGSTItem.length > 0) {
+  //             this.CurrentCGSTTax = CGSTItem[0].TypeValue;
+  //           }
+  //         } catch (e) {
+  //           this.commonService.ShowToast(
+  //             "Invalid data found. Please contact to admin."
+  //           );
+  //         }
+  //       }
+  //       //let BrandDetail = this.storage.get(null, "Brands");
+  //     } else {
+  //       this.commonService.ShowToast(
+  //         "Selected stock is invalid. Please contact to admin."
+  //       );
+  //     }
+  //     $(event?.currentTarget)
+  //       .closest("tr")
+  //       .find('div[name="Quantity"] > input')
+  //       .focus();
+  //   } else {
+  //     let Row = $(`#billing-body tr:nth-child(${position + 1})`);
+  //     this.commonService.ShowToast("Item already selected.");
+  //     this.commonService.ResetDropdown(
+  //       CurrentRow.find('div[name="autofill-container"]')
+  //     );
+  //     this.HighlightErrorRow(Row);
+  //     setTimeout(() => {
+  //       this.RemoveErrorHighlight(Row);
+  //     }, 4000);
+  //   }
+  // }
 
   ReLoadMasterData() {
     //-------------------  for testing it is enabled manually ------------------------------//
@@ -615,14 +496,6 @@ export class PurchaseComponent implements OnInit {
   AddMoreRows() {
     let BillingFormGroup: FormArray = this.purchaseFormGroup.get("GridDetail") as FormArray;
     BillingFormGroup.push(this.GetRow());
-  }
-
-  DeleteRow() {
-    alert("delete");
-  }
-
-  EditRow() {
-    alert("edit");
   }
 
   GetRow(): FormGroup {
@@ -783,9 +656,9 @@ export class PurchaseComponent implements OnInit {
         this.TotalTax = Number(catagory.CGST) + Number(catagory.SGST) + Number(catagory.IGST);
       }
 
-      row.get("CGST").setValue(catagory.CGST);
-      row.get("SGST").setValue(catagory.SGST);
-      row.get("IGST").setValue(catagory.IGST);
+      row.get("CGST").setValue(Number(catagory.CGST));
+      row.get("SGST").setValue(Number(catagory.SGST));
+      row.get("IGST").setValue(Number(catagory.IGST));
 
       this.Price = Number(currentItem.SellingPrice);
       row.get("Price").setValue(this.Price);
@@ -810,20 +683,6 @@ export class PurchaseComponent implements OnInit {
   }
 
   //----------------------  Amount calculation -----------------------
-
-  // PrepareBinding(event: any) {
-  //   this.$Qnty = $(event.currentTarget)
-  //     .closest("tr")
-  //     .find('input[name="Quantity"]');
-
-  //   this.TaxField = $(event.currentTarget)
-  //     .closest("tr")
-  //     .find('input[name="TaxAmount"]');
-
-  //   this.TotalAmountField = $(event.currentTarget)
-  //     .closest("tr")
-  //     .find('input[name="TotalAmount"]');
-  // }
 
   HandleDescription(event: any) {
     let value = "";

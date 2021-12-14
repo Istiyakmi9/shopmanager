@@ -359,16 +359,6 @@ h2 {
   margin-bottom: 1rem;
 }
 
-.error-field {
-  border: 1px solid red !important;
-  border-right: 5px solid red !important;
-}
-
-.warning-filed {
-  border: 1px solid #cddc39 !important;
-  border-right: 5px solid #cddc39 !important;
-}
-
 .p-text {
   padding-top: 11px !important;
 }
@@ -582,20 +572,38 @@ h2 {
 }
 
 .custom-toast {
-  padding: 10px;
-  bottom: 32px;
+  padding: 6px 4px 3px 4px;
+  bottom: 12px;
   z-index: 99999;
-  width: 54rem;
+  width: 50rem;
   text-align: center;
-  font-size: 1rem;
+  font-size: .9rem;
   font-weight: 400;
   left: 0px;
   margin: 0 auto;
   right: 0px;
   border-radius: 4px;
+  color: #444;
 }
 
 .custom-toast:hover {
-  opacity: 0.8;
+  opacity: 0.2;
   cursor: pointer;
+}
+
+// ================================ Error indication css for fields =============================== //
+
+.invalid-field {
+  border: 1px solid red !important;
+  border-right: 4px solid red !important;
+}
+
+.error-field {
+  border: 1px solid red !important;
+  border-right: 5px solid red !important;
+}
+
+.warning-filed {
+  border: 1px solid #cddc39 !important;
+  border-right: 5px solid #cddc39 !important;
 }

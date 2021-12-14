@@ -37,7 +37,8 @@
                           <label>Vendor name</label>
                           <div class="form-group row">
                             <div class="col-md-12">
-                              <app-iautocomplete id="CustomerByName" [Data]="CustomerData" [Placeholder]="'Select vendor'">
+                              <app-iautocomplete id="CustomerByName" formControlName="VendorUid"
+                                [Data]="CustomerData" [Placeholder]="'Select vendor'">
                               </app-iautocomplete>
                             </div>
                           </div>
@@ -46,8 +47,9 @@
                           <label>Bill no. #</label>
                           <div class="form-group row">
                             <div class="col-md-12">
-                              <input name="BillNo" id="BillNo" class="form-control" required formControlName="BillNo"
-                                placeholder="Enter bill no. #" />
+                              <input name="BillNo" id="BillNo" class="form-control" required 
+                              formControlName="BillNo" placeholder="Enter bill no. #" 
+                              [ngClass]="{'invalid-field': (CustomerDetail.BillNo.touched || submitted) && CustomerDetail.BillNo.errors?.required}" />
                             </div>
                           </div>
                         </div>

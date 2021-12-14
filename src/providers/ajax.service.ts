@@ -105,31 +105,12 @@ export class AjaxService {
               resolve(Data);
             } else {
               this.commonService.HideLoaderByAjax();
-              //this.commonService.ShowToast("Server return empty result");
               resolve([]);
             }
           },
           (error: HttpErrorResponse) => {
             this.commonService.HideLoaderByAjax();
-            if (error.status === 401) {
-              reject(false);
-              this.commonService.ShowToast(
-                "Your session expired. Please login again."
-              );
-              this.nav.navigate("/", "");
-            } else if (error.status === 404) {
-              this.commonService.ShowToast(
-                "Unable to get data. Your session is expired."
-              );
-              reject(error);
-              this.nav.navigate("/", null);
-            } else {
-              this.commonService.ShowToast(
-                "Unable to get data. Your session is expired."
-              );
-              reject(error);
-              this.nav.navigate("/", null);
-            }
+            reject(error);
           }
         );
     });
@@ -167,15 +148,7 @@ export class AjaxService {
             },
             error => {
               this.commonService.HideLoaderByAjax();
-              if (error.status === 401) {
-                reject(false);
-                this.commonService.ShowToast(
-                  "Your session expired. Please login again."
-                );
-                this.nav.navigate("/", "");
-              } else {
-                reject(error);
-              }
+              reject(error);
             }
           );
       }
@@ -214,7 +187,6 @@ export class AjaxService {
               resolve(Data);
             } else {
               reject(false);
-              this.nav.navigate("/", "");
               this.commonService.ShowToast(
                 "Unauthorized access is denied. Please login again."
               );
@@ -223,15 +195,7 @@ export class AjaxService {
           },
           error => {
             this.commonService.HideLoaderByAjax();
-            if (error.status === 401) {
-              reject(false);
-              this.commonService.ShowToast(
-                "Your session expired. Please login again."
-              );
-              this.nav.navigate("/", "");
-            } else {
-              reject(error);
-            }
+            reject(error);
           }
         );
     });

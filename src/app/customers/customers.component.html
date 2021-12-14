@@ -57,7 +57,7 @@
                             Full Name <span class="required">*</span>
                           </label>
                           <div class="col-9 d-inline-block">
-                            <input type="text" id="FullName" ngModel placeholder="Full name.# (required)"
+                            <input type="text" id="FullName" placeholder="Full name (required)"
                               formControlName="FullName" name="FullName" required class="form-control">
                           </div>
                         </div>
@@ -68,7 +68,7 @@
                           </label>
                           <div class="col-9 d-inline-block">
                             <input type="text" (keypress)="PhonenoValidation($event)" formControlName="Mobile"
-                              name="Mobile" required ngModel class="form-control"
+                              name="Mobile" required class="form-control"
                               placeholder="Mobile no.# (required)">
                           </div>
                         </div>
@@ -83,7 +83,7 @@
                           <div class="col-9 d-inline-block">
                             <input type="text" id="AlternetNo" formControlName="AlternetMobileNo"
                               (keypress)="PhonenoValidation($event)" placeholder="Alternet no.# (optional)"
-                              name="AlternetNo" ngModel class="form-control">
+                              name="AlternetNo" class="form-control">
                           </div>
                         </div>
 
@@ -115,7 +115,7 @@
                           <label for="middle-name" class="col-form-label text-right col-md-3 col-sm-3 col-xs-12">
                             Shop Name</label>
                           <div class="col-9 d-inline-block">
-                            <input id="ShopName" ngModel name="ShopName" class="form-control" type="text"
+                            <input id="ShopName" name="ShopName" class="form-control" type="text"
                               placeholder="Shop name (optional)" formControlName="ShopName">
                           </div>
                         </div>
@@ -125,7 +125,7 @@
                             License No.
                           </label>
                           <div class="col-9 d-inline-block">
-                            <input type="text" id="LicenseNo" name="LicenseNo" ngModel class="form-control"
+                            <input type="text" id="LicenseNo" name="LicenseNo" class="form-control"
                               placeholder="License No. (optional)" formControlName="LicenseNo">
                           </div>
                         </div>
@@ -148,7 +148,7 @@
                           State
                         </label>
                         <div class="col-9 d-inline-block">
-                          <select class="form-control" id="State" name="State" ngModel formControlName="State">
+                          <select class="form-control" id="State" name="State" formControlName="State">
                             <option selected="" value="">State</option>
                           </select>
                         </div>
@@ -223,7 +223,7 @@
                             IFSC Code
                           </label>
                           <div class="col-9 d-inline-block">
-                            <input type="text" id="IFSCCode" placeholder="IFSC Code (optional)" ngModel name="IFSCCode"
+                            <input type="text" id="IFSCCode" placeholder="IFSC Code (optional)" name="IFSCCode"
                               formControlName="IFSCCode" class="form-control">
                           </div>
                         </div>

@@ -5,6 +5,8 @@ import { CommonService, Toast } from "../../providers/common-service/common.serv
 import { AjaxService } from "../../providers/ajax.service";
 import { iNavigation } from "src/providers/iNavigation";
 import { ApplicationStorage } from "./../../providers/ApplicationStorage";
+import { FileDetail } from "../DbModel";
+import { ZerothIndex } from "src/providers/constants";
 
 @Component({
   selector: "app-customers",
@@ -19,6 +21,7 @@ export class CustomersComponent implements OnInit {
   UserDetail: any = {};
   IsCustomer: boolean = false;
   customerform: FormGroup;
+  fileDetail: FileDetail;
 
   constructor(
     private commonService: CommonService,
@@ -27,8 +30,7 @@ export class CustomersComponent implements OnInit {
     private storage: ApplicationStorage,
     private fb: FormBuilder
   ) {
-    this.UserDetail["UserImagePath"] = this.commonService.DefaultUserImage();
-    this.Vendor["UserImagePath"] = this.commonService.DefaultUserImage();
+    this.fileDetail = null;
   }
 
   initForm() {
@@ -55,6 +57,7 @@ export class CustomersComponent implements OnInit {
       ShopUid: new FormControl(this.UserDetail.ShopUid),
       IsClient: new FormControl(true),
       IsVendor: new FormControl(false),
+      ExistingFileDetailId: new FormControl(this.UserDetail.ExistingFileDetailId),
       CustomerUid: new FormControl(this.UserDetail.CustomerUid)
     });
   }
@@ -69,18 +72,17 @@ export class CustomersComponent implements OnInit {
 
   ngOnInit() {
     let data = this.nav.getValue();
-    if(data)
+    if(data) {
       this.loadData(data["data"]);
-    else {
+    } else {
       this.initForm();
       this.IsCustomer = true;
     }
   }
 
   loadData(value: string) {
-    let objectData = JSON.parse(value);
-    this.BindCustomerDetail(objectData);
-    this.ManageCustomer();
+    let userData = JSON.parse(value);
+    this.ManageCustomer(userData);
   }
 
   ResetForm() {
@@ -88,34 +90,35 @@ export class CustomersComponent implements OnInit {
     this.ClearAllFields();
     this.UserImagePath = this.commonService.DefaultUserImage();
     this.nav.resetValue();
-    this.commonService.ShowToast("Form reseted successfully");
+    Toast("Form reseted successfully");
   }
 
-  ManageCustomer() {
-    let Uid = "";
-    let Uri = `reports/GetCustomerById?UserUid=${this.UserDetail.CustomerUid}`;
+  ManageCustomer(userData: any) {
+    let Uri = `reports/GetCustomerById?UserUid=${userData.CustomerUid}`;
     this.http.get(Uri).then(
       data => {
-        if (typeof data["Record"] !== "undefined") {
-          let ServerData = data["Record"][0];
-          let flag = ServerData.IsClient;
-          if (flag) {
-            this.IsCustomer = true;
-            this.BindCustomerDetail(ServerData);
-          } else {
-            this.IsCustomer = false;
-            this.BindVendorDetail(ServerData);
+        if (data.responseBody) {
+          let ServerData = data.responseBody.CustomerDetail[0];
+          this.IsCustomer = true;
+          this.BindCustomerDetail(ServerData);
+          this.fileDetail = data.responseBody.Files[ZerothIndex] as FileDetail;
+          if(this.fileDetail) {
+            if(!isNaN(Number(this.fileDetail.FileOwnerId)))
+              this.fileDetail.FileOwnerId = Number(this.fileDetail.FileOwnerId);
+            if(!isNaN(Number(this.fileDetail.FileDetailId))) {
+              this.fileDetail.FileDetailId = Number(this.fileDetail.FileDetailId);
+              this.UserDetail.ExistingFileDetailId = this.fileDetail.FileDetailId;
+            }
           }
         } else {
-          this.commonService.ShowToast("Server error. Contact to admin.");
+          Toast("Server error. Contact to admin.");
         }
-
         this.initForm();
         this.IsCustomer = true;
       },
       err => {
         console.log(JSON.stringify(err));
-        this.commonService.ShowToast("Server error. Contact to admin.");
+        Toast("Server error. Contact to admin.");
       }
     );
   }
@@ -166,7 +169,8 @@ export class CustomersComponent implements OnInit {
       BankAccountNo: ServerData.AccountNo,
       IFSCCode: ServerData.Ifsc,
       ImagePath: UserImagePath,
-      CustomerUid: ServerData.CustomerUid
+      CustomerUid: ServerData.CustomerUid,
+      ExistingFileDetailId: 0
     };
   }
 
@@ -213,7 +217,7 @@ export class CustomersComponent implements OnInit {
       };
       console.log(this.UserImage.filename);
     } else {
-      this.commonService.ShowToast("No file selected");
+      Toast("No file selected");
     }
   }
 
@@ -294,15 +298,15 @@ export class CustomersComponent implements OnInit {
       this.http.upload("Registration/Vendor", formData).then(
         data => {
           if (data !== "" && data !== null) {
-            this.commonService.ShowToast("Record inserted successfully");
+            Toast("Record inserted successfully");
             this.storage.set(data);
             this.ClearAllFields();
           } else {
-            this.commonService.ShowToast("Fail to inserted.");
+            Toast("Fail to inserted.");
           }
         },
         error => {
-          this.commonService.ShowToast(
+          Toast(
             "Server error. Please contact to admin."
           );
         }
@@ -365,3 +369,4 @@ export class CustomersComponent implements OnInit {
     }
   }
 }
+
